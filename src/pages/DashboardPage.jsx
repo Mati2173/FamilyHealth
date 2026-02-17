@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Scale, Flame, Dumbbell, Droplets, Bone, Utensils, Calculator, Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -214,10 +216,13 @@ export default function DashboardPage() {
                             <div>
                                 <CardTitle className="text-base">Último registro</CardTitle>
                                 <CardDescription>
-                                    {new Intl.DateTimeFormat('es-AR', {
-                                        day: 'numeric', month: 'long',
-                                        year: 'numeric', hour: '2-digit', minute: '2-digit',
-                                    }).format(new Date(latestMeasurement.measured_at))}
+                                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                                        <time dateTime={latestMeasurement.measured_at} className="capitalize">
+                                            {format(new Date(latestMeasurement.measured_at), "EEEE d 'de' MMMM, yyyy", { locale: es })}
+                                        </time>
+                                        <span className="text-muted-foreground/50">·</span>
+                                        <span>{format(new Date(latestMeasurement.measured_at), 'HH:mm')} hs</span>
+                                    </div>
                                 </CardDescription>
                             </div>
                             <Button variant="ghost" size="sm" asChild className="gap-1 text-muted-foreground">
