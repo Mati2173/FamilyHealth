@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 
 // Default number of measurements to fetch per page
@@ -14,7 +14,8 @@ export function useMeasurements({ targetUserId, limit = PAGE_SIZE, autoFetch = t
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(0);
+    
+    const pageRef = useRef(0);
 
     const hasMore = measurements.length < totalCount;
     const latestMeasurement = measurements.length > 0 ? measurements[0] : null;
@@ -28,7 +29,7 @@ export function useMeasurements({ targetUserId, limit = PAGE_SIZE, autoFetch = t
         
         try {
             // Calculate pagination range
-            const currentPage = reset ? 0 : page;
+            const currentPage = reset ? 0 : pageRef.current;
             const from = currentPage * limit;
             const to = from + limit - 1;
 
@@ -47,10 +48,10 @@ export function useMeasurements({ targetUserId, limit = PAGE_SIZE, autoFetch = t
             // Reset or append based on reset flag
             if (reset) {
                 setMeasurements(data ?? []);
-                setPage(1);
+                pageRef.current = 1;
             } else {
                 setMeasurements((prev) => [...prev, ...(data ?? [])]);
-                setPage((prev) => prev + 1);
+                pageRef.current = currentPage + 1;
             }
         } catch (err) {
             console.error('[useMeasurements]', err);
@@ -59,7 +60,7 @@ export function useMeasurements({ targetUserId, limit = PAGE_SIZE, autoFetch = t
             setIsLoading(false);
             setIsLoadingMore(false);
         }
-    }, [targetUserId, limit, page]);
+    }, [targetUserId, limit]);
 
     // Add a new measurement and update state
     const addMeasurement = useCallback(async (payload) => {
@@ -95,9 +96,10 @@ export function useMeasurements({ targetUserId, limit = PAGE_SIZE, autoFetch = t
     // Auto-fetch when userId changes
     useEffect(() => {
         if (autoFetch && targetUserId) {
+            pageRef.current = 0;
             fetchMeasurements({ reset: true });
         }
-    }, [targetUserId, autoFetch, fetchMeasurements]);
+    }, [targetUserId, autoFetch]);
 
     return {
         measurements,
@@ -107,7 +109,7 @@ export function useMeasurements({ targetUserId, limit = PAGE_SIZE, autoFetch = t
         isLoadingMore,
         error,
         hasMore,
-        refetch: () => fetchMeasurements({ reset: true }),
+        refetch: () => { pageRef.current = 0; fetchMeasurements({ reset: true }) },
         fetchMore: () => fetchMeasurements({ reset: false }),
         addMeasurement,
         deleteMeasurement,
@@ -116,20 +118,33 @@ export function useMeasurements({ targetUserId, limit = PAGE_SIZE, autoFetch = t
 
 /**
  * Transform measurements into chart-formatted data
- * Limits to maxPoints and orders chronologically for display
+ * Limits to a specified number of recent days and averages multiple entries per day
  */
-export function useWeightChartData(measurements, maxPoints = 30) {
+export function useWeightChartData(measurements, maxDays = 30) {
     if (!measurements?.length) return [];
 
-    // Format measurements for chart: limit, reverse to oldest-first, extract needed fields
-    return [...measurements]
-        .slice(0, maxPoints)
-        .reverse()
-        .map((m) => ({
-            date: m.measured_at,
-            weight: m.weight_kg,
-            label: new Intl.DateTimeFormat('es-AR', {
-                day: '2-digit', month: 'short',
-            }).format(new Date(m.measured_at)),
-        }));
+    // Group measurements by day (using local date string as key)
+    const byDay = new Map();
+
+    // Iterate in reverse to maintain chronological order when grouping
+    [...measurements].reverse().forEach((m) => {
+        const dayKey = new Date(m.measured_at).toLocaleDateString('es-AR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        
+        if (!byDay.has(dayKey)) {
+            byDay.set(dayKey, { weights: [], date: m.measured_at });
+        }
+        
+        byDay.get(dayKey).weights.push(m.weight_kg);
+    });
+
+    // Transform grouped data into chart format, limiting to maxDays
+    return [...byDay.entries()]
+        .slice(-maxDays)
+        .map(([dayKey, { weights, date }]) => ({
+            date,
+            weight: Math.round((weights.reduce((a, b) => a + b, 0) / weights.length) * 10) / 10,
+            label: new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: 'short' }).format(new Date(date)),
+            isAverage: weights.length > 1,
+            count: weights.length,
+    }));
 }

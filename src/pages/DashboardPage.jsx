@@ -12,7 +12,8 @@ import { cn } from '@/lib/utils';
 
 function WeightTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
-    
+    const point = payload[0]?.payload;
+
     return (
         <div className="rounded-xl border bg-card px-3 py-2 shadow-xl text-sm">
             <p className="text-muted-foreground mb-1">{label}</p>
@@ -20,6 +21,11 @@ function WeightTooltip({ active, payload, label }) {
                 {payload[0]?.value?.toFixed(1)}{' '}
                 <span className="text-xs font-normal text-muted-foreground">kg</span>
             </p>
+            {point?.isAverage && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                    Promedio de {point.count} mediciones
+                </p>
+            )}
         </div>
     );
 }
