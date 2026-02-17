@@ -13,7 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase';
 
 const measurementSchema = z.object({
     weight_kg: z
@@ -145,7 +144,7 @@ function MetricField({ control, name, label, placeholder, unit, icon: Icon, desc
     );
 }
 
-export function MeasurementForm({ userId, onSuccess, onCancel }) {
+export function MeasurementForm({ userId, onSave, onSuccess, onCancel }) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -177,11 +176,7 @@ export function MeasurementForm({ userId, onSuccess, onCancel }) {
         try {
             const payload = preparePayload(data, userId);
 
-            const { error } = await supabase
-                .from('measurements')
-                .insert(payload);
-
-            if (error) throw error;
+            await onSave(payload);
 
             toast({
                 title: '✓ Medición guardada',
