@@ -1,11 +1,24 @@
-import { Scale } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import MeasurementForm from '@/components/measurements/MeasurementForm';
 
 export default function NewMeasurementPage() {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    function handleSuccess() {
+        navigate('/', { replace: true });
+    }
+
+    function handleCancel() {
+        navigate(-1);
+    }
+
     return (
-        <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
-            <Scale className="h-10 w-10 text-muted-foreground/40" />
-            <p className="font-medium">Nueva Medición</p>
-            <p className="text-sm text-muted-foreground">Próximamente</p>
-        </div>
+        <MeasurementForm
+            userId={user?.id}
+            onSuccess={handleSuccess}
+            onCancel={handleCancel}
+        />
     );
 }
