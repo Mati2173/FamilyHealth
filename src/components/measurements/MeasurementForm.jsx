@@ -83,6 +83,10 @@ const measurementSchema = z.object({
 });
 
 function preparePayload(data, userId) {
+    const measuredAt = data.measured_at
+        ? new Date(data.measured_at).toISOString()
+        : new Date().toISOString();
+    
     return {
         user_id: userId,
         weight_kg: parseFloat(data.weight_kg),
@@ -93,7 +97,7 @@ function preparePayload(data, userId) {
         recommended_kcal: data.recommended_kcal != null ? parseInt(data.recommended_kcal) : null,
         bmi: data.bmi != null ? parseFloat(data.bmi) : null,
         notes: data.notes || null,
-        measured_at: data.measured_at || new Date().toISOString(),
+        measured_at: measuredAt,
     }
 }
 
