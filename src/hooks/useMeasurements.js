@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 // Default number of measurements to fetch per page
 const PAGE_SIZE = 20;
@@ -128,10 +130,12 @@ export function useWeightChartData(measurements, maxDays = 30) {
 
     // Iterate in reverse to maintain chronological order when grouping
     [...measurements].reverse().forEach((m) => {
-        const dayKey = new Date(m.measured_at).toLocaleDateString('es-AR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const dateObj = new Date(m.measured_at);
+
+        const dayKey = format(dateObj, "yyyy-MM-dd");
         
         if (!byDay.has(dayKey)) {
-            byDay.set(dayKey, { weights: [], date: m.measured_at });
+            byDay.set(dayKey, { weights: [], date: dateObj });
         }
         
         byDay.get(dayKey).weights.push(m.weight_kg);
@@ -143,7 +147,7 @@ export function useWeightChartData(measurements, maxDays = 30) {
         .map(([dayKey, { weights, date }]) => ({
             date,
             weight: Math.round((weights.reduce((a, b) => a + b, 0) / weights.length) * 10) / 10,
-            label: new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: 'short' }).format(new Date(date)),
+            label: format(date, "dd MMM", { locale: es }),
             isAverage: weights.length > 1,
             count: weights.length,
     }));

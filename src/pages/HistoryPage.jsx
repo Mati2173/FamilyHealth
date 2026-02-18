@@ -148,7 +148,7 @@ function MeasurementCard({ measurement, onDelete }) {
                         <AlertDialogDescription>
                             Esta acción no se puede deshacer. El registro del día{' '}
                             <span className="font-medium">
-                                {format(new Date(measurement.measured_at), "d 'de' MMMM 'a las' HH:mm", { locale: es })}
+                                {format(new Date(measurement.measured_at), "d 'de' MMMM 'de' yyyy 'a las' HH:mm", { locale: es })}
                             </span>{' '}
                             será eliminado permanentemente.
                         </AlertDialogDescription>
