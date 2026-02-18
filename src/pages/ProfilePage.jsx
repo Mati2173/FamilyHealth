@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Save, User as UserIcon, Lock, Mail } from 'lucide-react';
+import { Loader2, Save, User as UserIcon, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,6 +62,7 @@ export default function ProfilePage() {
     const { toast } = useToast();
     const [isLoadingProfile, setIsLoadingProfile] = useState(false);
     const [isLoadingSecurity, setIsLoadingSecurity] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const profileForm = useForm({
         resolver: zodResolver(profileSchema),
@@ -366,7 +367,23 @@ export default function ProfilePage() {
                                         <FormControl>
                                             <div className="relative">
                                                 <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                                <Input {...field} type="password" placeholder="••••••" className="pl-9 h-11" />
+                                                <Input 
+                                                    {...field} 
+                                                    type={showPassword ? "text" : "password"} 
+                                                    placeholder="••••••" 
+                                                    className="pl-9 pr-10 h-11" 
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                >
+                                                    {showPassword ? (
+                                                        <EyeOff className="h-4 w-4" />
+                                                    ) : (
+                                                        <Eye className="h-4 w-4" />
+                                                    )}
+                                                </button>
                                             </div>
                                         </FormControl>
                                         <FormMessage />

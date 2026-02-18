@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse } from 'lucide-react';
+import { Loader2, HeartPulse, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,6 +65,8 @@ export default function RegisterPage() {
     const navigate = useNavigate();
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(registerSchema),
@@ -235,7 +237,26 @@ export default function RegisterPage() {
                                         <FormItem>
                                             <FormLabel>Contraseña</FormLabel>
                                             <FormControl>
-                                                <Input {...field} type="password" placeholder="••••••••" autoComplete="new-password" className="h-11" />
+                                                <div className="relative">
+                                                    <Input 
+                                                        {...field} 
+                                                        type={showPassword ? "text" : "password"} 
+                                                        placeholder="••••••••" 
+                                                        autoComplete="new-password" 
+                                                        className="h-11 pr-10" 
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                    >
+                                                        {showPassword ? (
+                                                            <EyeOff className="h-4 w-4" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                </div>
                                             </FormControl>
                                             <FormDescription>Mínimo 6 caracteres</FormDescription>
                                             <FormMessage />
@@ -250,7 +271,26 @@ export default function RegisterPage() {
                                         <FormItem>
                                             <FormLabel>Confirmar contraseña</FormLabel>
                                             <FormControl>
-                                                <Input {...field} type="password" placeholder="••••••••" autoComplete="new-password" className="h-11" />
+                                                <div className="relative">
+                                                    <Input 
+                                                        {...field} 
+                                                        type={showConfirmPassword ? "text" : "password"} 
+                                                        placeholder="••••••••" 
+                                                        autoComplete="new-password" 
+                                                        className="h-11 pr-10" 
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                    >
+                                                        {showConfirmPassword ? (
+                                                            <EyeOff className="h-4 w-4" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                </div>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
