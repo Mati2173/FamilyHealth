@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useToast } from '@/hooks/use-toast';
 
 export default function TopBar({ title }) {
-    const { profile, signOut } = useAuth();
+    const { user, profile, signOut } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -48,7 +48,7 @@ export default function TopBar({ title }) {
                     <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuLabel className="font-normal">
                             <p className="font-medium text-sm">{profile?.full_name}</p>
-                            <p className="text-xs text-muted-foreground truncate capitalize">{profile?.gender}</p>
+                            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                         </DropdownMenuLabel>
 
                         <DropdownMenuSeparator />
