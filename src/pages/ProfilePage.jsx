@@ -22,7 +22,7 @@ const profileSchema = z.object({
         .string()
         .min(1, 'La altura es obligatoria')
         .refine(
-            (v) => !isNaN(parseFloat(v)) && parseFloat(v) > 50 && parseFloat(v) < 200,
+            (v) => !isNaN(parseFloat(v)) && parseFloat(v) >= 50 && parseFloat(v) <= 200,
             { message: 'Ingresá una altura válida (50 - 200 cm)' }
     ),
 
@@ -56,8 +56,8 @@ export default function ProfilePage() {
             full_name: profile?.full_name  ?? '',
             height_cm: profile?.height_cm?.toString() ?? '',
             birth_date: profile?.birth_date ?? '',
-            gender: profile?.gender     ?? 'otro',
-            is_public: profile?.is_public  ?? false,
+            gender: profile?.gender ?? '',
+            is_public: profile?.is_public ?? false,
         },
     });
 

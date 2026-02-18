@@ -32,7 +32,7 @@ const registerSchema = z.object({
         .string()
         .min(1, 'La altura es obligatoria')
         .refine(
-            (v) => !isNaN(parseFloat(v)) && parseFloat(v) > 50 && parseFloat(v) < 200,
+            (v) => !isNaN(parseFloat(v)) && parseFloat(v) >= 50 && parseFloat(v) <= 200,
             { message: 'Ingresá una altura válida (50 - 200 cm)' }
         ),
 
