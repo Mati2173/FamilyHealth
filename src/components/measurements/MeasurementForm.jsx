@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Loader2, Scale, Flame, Droplets, Dumbbell, Bone, HelpCircle, Utensils, Calculator } from 'lucide-react';
+import { Loader2, Scale, Flame, Droplets, Dumbbell, Bone, Utensils, Calculator, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -102,8 +102,6 @@ function preparePayload(data, userId) {
 }
 
 function MetricField({ control, name, label, placeholder, unit, icon: Icon, description, helpText, step = '0.1', min = '0', max = '100' }) {
-    const [helpOpen, setHelpOpen] = useState(false);
-
     return (
         <FormField
             control={control}
@@ -113,25 +111,10 @@ function MetricField({ control, name, label, placeholder, unit, icon: Icon, desc
                     <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                         {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" />}
                         {label}
-                        {helpText && (
-                            <button
-                                type="button"
-                                onClick={() => setHelpOpen(!helpOpen)}
-                                className="inline-flex items-center justify-center rounded-full p-0.5 hover:bg-muted transition-colors ml-0.5"
-                                aria-label="Ver ayuda"
-                            >
-                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                            </button>
-                        )}
                         <Badge variant="outline" className="ml-auto text-xs font-normal text-muted-foreground">
                             Opcional
                         </Badge>
                     </FormLabel>
-                    {helpOpen && helpText && (
-                        <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 mb-2 border">
-                            <strong>Ayuda:</strong> {helpText}
-                        </div>
-                    )}
                     <FormControl>
                         <div className="relative">
                             <Input {...field} type="number" inputMode="decimal" step={step} min={min} max={max} placeholder={placeholder} className="pr-12 h-12 text-base" />
@@ -140,6 +123,12 @@ function MetricField({ control, name, label, placeholder, unit, icon: Icon, desc
                             </span>
                         </div>
                     </FormControl>
+                    {helpText && (
+                        <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2 border border-muted">
+                            <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                            <span>{helpText}</span>
+                        </div>
+                    )}
                     {description && <FormDescription>{description}</FormDescription>}
                     <FormMessage />
                 </FormItem>
@@ -232,11 +221,10 @@ export function MeasurementForm({ userId, onSave, onSuccess, onCancel }) {
                 </Card>
 
                 {/* ── SECTION: Weight ─────────────────────────────────────────────── */}
-                <Card className="border-2 border-primary/30 bg-primary/5">
+                <Card className="border-primary/20 bg-muted/40 ring-1 ring-primary/10">
                     <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-sm font-medium uppercase tracking-wider">
-                            <Scale className="h-4 w-4" /> Peso corporal
-                            <Badge className="ml-auto">Obligatorio</Badge>
+                        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                            Peso corporal
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -245,10 +233,15 @@ export function MeasurementForm({ userId, onSave, onSuccess, onCancel }) {
                             name="weight_kg"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+                                        <Scale className="h-3.5 w-3.5 text-muted-foreground" />
+                                        Peso
+                                        <Badge className="ml-auto">Obligatorio</Badge>
+                                    </FormLabel>
                                     <FormControl>
                                         <div className="relative">
-                                            <Input {...field} type="number" inputMode="decimal" step="0.1" min="2" max="500" placeholder="70.5" className="pr-12 h-16 text-3xl font-bold text-center tracking-tight" />
-                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-lg font-semibold text-muted-foreground pointer-events-none">
+                                            <Input {...field} type="number" inputMode="decimal" step="0.1" min="2" max="500" placeholder="70.5" className="pr-12 h-12 text-base" />
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
                                                 kg
                                             </span>
                                         </div>
