@@ -120,6 +120,33 @@ export function AuthProvider({ children }) {
         setProfile(prof);
     }
 
+    // Updates the user's profile information in the database and state
+    async function updateUserProfile(updates) {
+        if (!user) throw new Error('Usuario no autenticado');
+
+        const { error } = await supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', user.id);
+
+        if (error) throw error;
+
+        setProfile(prev => ({ ...prev, ...updates }));
+    }
+
+    // Updates the user's authentication information ({ email, password }) and state
+    async function updateUserAccount(updates) {
+        const { data, error } = await supabase.auth.updateUser(updates);
+        
+        if (error) throw error;
+        
+        if (data.user) {
+            setUser(data.user);
+        }
+        
+        return data;
+    }
+
     const value = {
         user,
         profile,
@@ -127,6 +154,8 @@ export function AuthProvider({ children }) {
         signUp,
         signIn,
         signOut,
+        updateUserProfile,
+        updateUserAccount,
         refreshProfile,
         isAuthenticated: !!user,
     };

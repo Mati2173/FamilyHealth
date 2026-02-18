@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Save, User as UserIcon } from 'lucide-react';
+import { Loader2, Save, User as UserIcon, Lock, Mail } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { useToast }  from '@/hooks/use-toast';
 
 const profileSchema = z.object({
@@ -45,12 +45,25 @@ const profileSchema = z.object({
     is_public: z.boolean(),
 });
 
-export default function ProfilePage() {
-    const { profile, refreshProfile } = useAuth();
-    const { toast } = useToast();
-    const [isLoading, setIsLoading] = useState(false);
+const securitySchema = z.object({
+    email: z
+        .email({ message: 'Email inválido' }),
+    
+    password: z
+        .string()
+        .optional()
+        .refine(val => !val || val.length >= 6, {
+            message: 'Mínimo 6 caracteres',
+        }),
+});
 
-    const form = useForm({
+export default function ProfilePage() {
+    const { user, profile, updateUserProfile, updateUserAccount, refreshProfile } = useAuth();
+    const { toast } = useToast();
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+    const [isLoadingSecurity, setIsLoadingSecurity] = useState(false);
+
+    const profileForm = useForm({
         resolver: zodResolver(profileSchema),
         defaultValues: {
             full_name: profile?.full_name  ?? '',
@@ -61,12 +74,21 @@ export default function ProfilePage() {
         },
     });
 
-    const { reset: resetForm } = form;
+    const securityForm = useForm({
+        resolver: zodResolver(securitySchema),
+        defaultValues: {
+            email: user?.email || '',
+            password: '',
+        },
+    });
+
+    const { reset: resetProfileForm } = profileForm;
+    const { reset: resetSecurityForm } = securityForm;
 
     // Reset form values when profile data changes
     useEffect(() => {
         if (profile) {
-            resetForm({
+            resetProfileForm({
                 full_name: profile.full_name ?? '',
                 height_cm: profile.height_cm?.toString() ?? '',
                 birth_date: profile.birth_date ?? '',
@@ -74,26 +96,31 @@ export default function ProfilePage() {
                 is_public: profile.is_public ?? false,
             });
         }
-    }, [profile, resetForm]);
+    }, [profile, resetProfileForm]);
 
-    async function onSubmit(data) {
+    // Reset security form when user changes
+    useEffect(() => {
+        if (user) {
+            resetSecurityForm({
+                email: user.email || '',
+                password: '',
+            });
+        }
+    }, [user, resetSecurityForm]);
+
+    async function onSubmitProfile(data) {
         if (!profile?.id) return;
 
-        setIsLoading(true);
+        setIsLoadingProfile(true);
         
         try {
-            const { error } = await supabase
-                .from('profiles')
-                .update({
-                    full_name: data.full_name,
-                    height_cm: parseFloat(data.height_cm),
-                    birth_date: data.birth_date,
-                    gender: data.gender,
-                    is_public: data.is_public,
-                })
-                .eq('id', profile.id);
-
-            if (error) throw error;
+            await updateUserProfile({
+                full_name: data.full_name,
+                height_cm: parseFloat(data.height_cm),
+                birth_date: data.birth_date,
+                gender: data.gender,
+                is_public: data.is_public,
+            });
 
             await refreshProfile();
 
@@ -108,7 +135,42 @@ export default function ProfilePage() {
                 description: error?.message || 'No se pudieron guardar los cambios.',
             });
         } finally {
-            setIsLoading(false);
+            setIsLoadingProfile(false);
+        }
+    }
+
+    async function onSubmitSecurity(data) {
+        setIsLoadingSecurity(true);
+        const updates = {};
+
+        if (data.email !== user?.email) updates.email = data.email;
+        if (data.password) updates.password = data.password;
+
+        if (Object.keys(updates).length === 0) {
+            setIsLoadingSecurity(false);
+            return;
+        }
+
+        try {
+            await updateUserAccount(updates);
+
+            toast({
+                title: 'Cuenta actualizada',
+                description: updates.email 
+                    ? 'Revisá tu correo para confirmar el cambio.' 
+                    : 'Tu contraseña ha sido actualizada.',
+            });
+            
+            securityForm.reset({ email: data.email, password: '' });
+
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: error.message,
+            });
+        } finally {
+            setIsLoadingSecurity(false);
         }
     }
 
@@ -127,8 +189,8 @@ export default function ProfilePage() {
                 </div>
             </div>
 
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
+            <Form {...profileForm}>
+                <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-5" noValidate>
                     {/* Personal Info */}
                     <Card>
                         <CardHeader className="pb-3">
@@ -138,7 +200,7 @@ export default function ProfilePage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <FormField
-                                control={form.control}
+                                control={profileForm.control}
                                 name="full_name"
                                 render={({ field }) => (
                                     <FormItem>
@@ -153,7 +215,7 @@ export default function ProfilePage() {
 
                             <div className="grid grid-cols-2 gap-3">
                                 <FormField
-                                    control={form.control}
+                                    control={profileForm.control}
                                     name="height_cm"
                                     render={({ field }) => (
                                         <FormItem>
@@ -172,7 +234,7 @@ export default function ProfilePage() {
                                 />
 
                                 <FormField
-                                    control={form.control}
+                                    control={profileForm.control}
                                     name="gender"
                                     render={({ field }) => (
                                         <FormItem>
@@ -195,7 +257,7 @@ export default function ProfilePage() {
                             </div>
 
                             <FormField
-                                control={form.control}
+                                control={profileForm.control}
                                 name="birth_date"
                                 render={({ field }) => (
                                     <FormItem>
@@ -222,7 +284,7 @@ export default function ProfilePage() {
                         </CardHeader>
                         <CardContent>
                             <FormField
-                                control={form.control}
+                                control={profileForm.control}
                                 name="is_public"
                                 render={({ field }) => (
                                     <FormItem>
@@ -250,8 +312,8 @@ export default function ProfilePage() {
                     </Card>
 
                     {/* Submit Button */}
-                    <Button type="submit" className="w-full h-11" disabled={isLoading || !form.formState.isDirty}>
-                        {isLoading ? (
+                    <Button type="submit" className="w-full h-11" disabled={isLoadingProfile || !profileForm.formState.isDirty}>
+                        {isLoadingProfile ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 Guardando...
@@ -265,6 +327,65 @@ export default function ProfilePage() {
                     </Button>
                 </form>
             </Form>
+
+            <Separator className="my-8" />
+
+            {/* Security Settings */}
+            <Card>
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                        <Lock className="h-4 w-4" /> Seguridad de la cuenta
+                    </CardTitle>
+                    <CardDescription>Administrá tu acceso y credenciales</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Form {...securityForm}>
+                        <form onSubmit={securityForm.handleSubmit(onSubmitSecurity)} className="space-y-4">
+                            <FormField
+                                control={securityForm.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Correo Electrónico</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input {...field} className="pl-9 h-11" />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={securityForm.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Nueva Contraseña</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input {...field} type="password" placeholder="••••••" className="pl-9 h-11" />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                        <FormDescription>
+                                            Dejalo vacío si no querés cambiarla.
+                                        </FormDescription>
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="flex justify-end">
+                                <Button type="submit" disabled={isLoadingSecurity || !securityForm.formState.isDirty}>
+                                    {isLoadingSecurity && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Actualizar Credenciales
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
         </div>
     );
 }
