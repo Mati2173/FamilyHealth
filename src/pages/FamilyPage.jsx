@@ -25,7 +25,7 @@ function MiniMetric({ icon: Icon, label, value, unit, colorClass }) {
     );
 }
 
-function FamilyMemberCard({ member, isCurrentUser }) {
+function FamilyMemberCard({ member, isCurrentUser, className }) {
     const initials = member?.full_name
         ? member.full_name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
         : '?';
@@ -42,7 +42,8 @@ function FamilyMemberCard({ member, isCurrentUser }) {
     return (
         <Card className={cn(
             'overflow-hidden',
-            isCurrentUser && 'border-primary/20 bg-muted/40 ring-1 ring-primary/10'
+            isCurrentUser && 'border-primary/20 bg-muted/40 ring-1 ring-primary/10',
+            className
         )}>
             <CardHeader className="pb-3">
                 <div className="flex items-start gap-3">
@@ -202,11 +203,12 @@ export default function FamilyPage() {
             {/* ── Family Member Cards ─────────────────────────────────────── */}
             {members.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {members.map((member) => (
+                    {members.map((member, index) => (
                         <FamilyMemberCard
                             key={member.user_id}
                             member={member}
                             isCurrentUser={member.user_id === user?.id}
+                            className={members.length % 2 !== 0 && index === members.length - 1 ? 'md:col-span-2' : undefined}
                         />
                     ))}
                 </div>
