@@ -10,6 +10,7 @@ import NewMeasurementPage from '@/pages/NewMeasurementPage';
 import HistoryPage from '@/pages/HistoryPage';
 import FamilyPage from '@/pages/FamilyPage';
 import ProfilePage from '@/pages/ProfilePage';
+import ScrollToTop from '@/components/layout/ScrollToTop';
 
 function PrivatePage({ title, children }) {
     return (
@@ -24,6 +25,7 @@ function PrivatePage({ title, children }) {
 export default function App() {
     return (
         <BrowserRouter>
+            <ScrollToTop />
             <AuthProvider>
                 <Routes>
                     {/* ── Public routes ── */}
