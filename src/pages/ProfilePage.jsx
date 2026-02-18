@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -60,6 +60,21 @@ export default function ProfilePage() {
             is_public: profile?.is_public ?? false,
         },
     });
+
+    const { reset: resetForm } = form;
+
+    // Reset form values when profile data changes
+    useEffect(() => {
+        if (profile) {
+            resetForm({
+                full_name: profile.full_name ?? '',
+                height_cm: profile.height_cm?.toString() ?? '',
+                birth_date: profile.birth_date ?? '',
+                gender: profile.gender ?? '',
+                is_public: profile.is_public ?? false,
+            });
+        }
+    }, [profile, resetForm]);
 
     async function onSubmit(data) {
         if (!profile?.id) return;
