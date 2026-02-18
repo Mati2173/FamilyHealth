@@ -126,10 +126,19 @@ function FamilyMemberCard({ member, isCurrentUser, className }) {
 
 function FamilySkeleton() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-64 w-full rounded-2xl" />
-            ))}
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                    <Skeleton className="h-7 w-44" />
+                    <Skeleton className="h-4 w-56" />
+                </div>
+                <Skeleton className="h-5 w-5 rounded" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                    <Skeleton key={i} className="h-64 w-full rounded-2xl" />
+                ))}
+            </div>
         </div>
     );
 }
