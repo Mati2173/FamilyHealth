@@ -8,7 +8,6 @@ import { supabase } from '@/lib/supabase';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const [session, setSession] = useState(null);
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -31,18 +30,17 @@ export function AuthProvider({ children }) {
 
     // Initialize auth state on component mount and listen for auth changes
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            if (!session) setLoading(false);
-        });
-
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (_event, session) => {
-                setSession(session);
-                setUser(session?.user ?? null);
+                const currentUser = session?.user ?? null;
+
+                setUser(prevUser => {
+                    if (prevUser?.id === currentUser?.id) return prevUser;
+                    else return currentUser;
+                });
+
                 
-                if (!session) {
+                if (!currentUser) {
                     setProfile(null);
                     setLoading(false);
                 }
@@ -54,24 +52,19 @@ export function AuthProvider({ children }) {
 
     // Load user profile data when session changes
     useEffect(() => {
-        let mounted = true;
+        if (!user || (profile && profile.id === user.id)) return;
 
-        async function loadUserData() {
-            if (session?.user) {
-                if (!profile || profile.id !== session.user.id) {
-                    const prof = await fetchProfile(session.user.id);
-                    if (mounted) {
-                        setProfile(prof);
-                        setLoading(false);
-                    }
-                }
-            }
+        async function loadProfile() {
+            setLoading(true);
+
+            const prof = await fetchProfile(user.id);
+
+            setProfile(prof);
+            setLoading(false);
         }
 
-        loadUserData();
-
-        return () => { mounted = false; };
-    }, [session]);
+        loadProfile();
+    }, [user]);
 
     // Registers a new user with email and password, and creates user profile
     async function signUp({ email, password, fullName, heightCm, birthDate, gender }) {
