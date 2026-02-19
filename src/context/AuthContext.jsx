@@ -68,23 +68,21 @@ export function AuthProvider({ children }) {
 
     // Registers a new user with email and password, and creates user profile
     async function signUp({ email, password, fullName, heightCm, birthDate, gender }) {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-
-        if (error) throw error;
-
-        if (data.user) {
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .update({
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
                     full_name: fullName,
                     height_cm: heightCm,
                     birth_date: birthDate,
                     gender: gender,
-                })
-                .eq('id', data.user.id);
+                    is_public: false,
+                }
+            }
+        });
 
-            if (profileError) throw profileError;
-        }
+        if (error) throw error;
 
         return data;
     }
