@@ -103,6 +103,15 @@ export function AuthProvider({ children }) {
         if (error) throw error;
     }
 
+    // Sends a password reset email to the specified email address
+    async function sendPasswordResetEmail(email) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password`,
+        });
+    
+        if (error) throw error;
+    }
+
     // Refreshes the current user's profile data from the database
     async function refreshProfile() {
         if (!user) return;
@@ -145,6 +154,7 @@ export function AuthProvider({ children }) {
         signUp,
         signIn,
         signOut,
+        sendPasswordResetEmail,
         updateUserProfile,
         updateUserAccount,
         refreshProfile,
@@ -170,7 +180,10 @@ export function AuthProvider({ children }) {
  * - signUp: Function to register a new user
  * - signIn: Function to login with email and password
  * - signOut: Function to logout the current user
+ * - sendPasswordResetEmail: Function to send a password reset email
  * - refreshProfile: Function to refresh user's profile data
+ * - updateUserProfile: Function to update user's profile information
+ * - updateUserAccount: Function to update user's authentication information (email/password)
  */
 export function useAuth() {
     const context = useContext(AuthContext);

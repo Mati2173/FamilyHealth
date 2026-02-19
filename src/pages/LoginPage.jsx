@@ -125,6 +125,13 @@ export default function LoginPage() {
                     </CardContent>
                 </Card>
 
+                {/* Forgot Password Link */}
+                <p className="text-center text-sm">
+                    <Link to="/forgot-password" className="text-muted-foreground hover:text-primary transition-colors">
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </p>
+
                 {/* Link to Register */}
                 <p className="text-center text-sm text-muted-foreground">
                     ¿No tenés cuenta?{' '}
