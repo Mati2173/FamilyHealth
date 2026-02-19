@@ -122,7 +122,7 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10">
-            <div className="w-full max-w-sm space-y-6">
+            <div className="w-full max-w-md space-y-6">
                 {/* Branding */}
                 <div className="flex flex-col items-center gap-2 text-center">
                     <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary text-primary-foreground">
