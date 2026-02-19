@@ -75,7 +75,7 @@ export default function ResetPasswordPage() {
     // If not loading and not authenticated, token is invalid or expired
     if (!loadingTokenVerification && !isAuthenticated) {
         return (
-            <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-background to-muted">
+            <div className="flex min-h-screen items-center justify-center p-4 bg-background">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center space-y-2">
                         <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
@@ -85,8 +85,8 @@ export default function ResetPasswordPage() {
                         <CardDescription>El enlace para restablecer tu contraseña no es válido o ha expirado.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <Alert className="border-red-600 bg-red-50">
-                            <AlertDescription className="text-red-700">
+                        <Alert className="border-red-600 bg-red-50 dark:border-red-700 dark:bg-red-950">
+                            <AlertDescription className="text-red-700 dark:text-red-300">
                                 Por favor, solicitá un nuevo enlace de restablecimiento de contraseña.
                             </AlertDescription>
                         </Alert>
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
 
     // If authenticated, show the reset password form
     return (
-        <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-background to-muted">
+        <div className="flex min-h-screen items-center justify-center p-4 bg-background">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center space-y-2">
                     <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">

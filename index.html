@@ -5,6 +5,23 @@
     <link rel="icon" type="image/svg+xml" href="/heart-pulse.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FamilyHealth</title>
+    <script>
+      // Initialize theme before React renders to prevent FOUC (Flash of Unstyled Content)
+      (function() {
+        const storageKey = 'familyhealth-theme';
+        const theme = localStorage.getItem(storageKey) || 'system';
+        const html = document.documentElement;
+        
+        if (theme === 'system') {
+          const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (isDark) {
+            html.classList.add('dark');
+          }
+        } else if (theme === 'dark') {
+          html.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

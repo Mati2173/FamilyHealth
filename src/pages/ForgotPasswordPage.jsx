@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
 
     if (emailSent) {
         return (
-            <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-background to-muted">
+            <div className="flex min-h-screen items-center justify-center p-4 bg-background">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center space-y-2">
                         <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
@@ -52,8 +52,8 @@ export default function ForgotPasswordPage() {
                         <CardDescription>Revisá tu casilla de correo</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <Alert className="border-green-600 bg-green-50">
-                            <AlertDescription className="text-green-700">
+                        <Alert className="border-green-600 bg-green-50 dark:border-green-700 dark:bg-green-950">
+                            <AlertDescription className="text-green-700 dark:text-green-300">
                                 Te enviamos un link para restablecer tu contraseña a{' '}
                                 <span className="font-semibold">{form.getValues('email')}</span>.
                                 El link es válido por 1 hora.
@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-background to-muted">
+        <div className="flex min-h-screen items-center justify-center p-4 bg-background">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center space-y-2">
                     <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
