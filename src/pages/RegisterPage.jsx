@@ -244,7 +244,11 @@ export default function RegisterPage() {
                                                 </SelectContent>
                                             </Select>
                                             <FormDescription className="text-xs">
-                                                {field.value && ACTIVITY_LEVELS[field.value].description} (Ejemplo: {ACTIVITY_LEVELS[field.value].example})
+                                                {field.value && (
+                                                    <>
+                                                        {ACTIVITY_LEVELS[field.value].description} (Ejemplo: {ACTIVITY_LEVELS[field.value].example})
+                                                    </>
+                                                )}
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
