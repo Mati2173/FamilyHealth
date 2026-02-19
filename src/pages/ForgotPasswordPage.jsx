@@ -10,9 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
 const schema = z.object({
-    email: z.email('Email inválido'),
+    email: z.email({ message: 'Correo Electrónico inválido' }),
 });
 
 export default function ForgotPasswordPage() {
@@ -90,9 +89,12 @@ export default function ForgotPasswordPage() {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
+                                        <FormLabel>Correo Electrónico</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="email" placeholder="nombre@email.com" className="h-11" disabled={isLoading} />
+                                            <div className="relative">
+                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                <Input {...field} type="email" placeholder="nombre@email.com" className="pl-9 h-11" disabled={isLoading} />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

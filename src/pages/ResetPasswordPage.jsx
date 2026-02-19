@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,6 +31,7 @@ export default function ResetPasswordPage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(schema),
@@ -123,7 +124,7 @@ export default function ResetPasswordPage() {
                                         <FormLabel>Contraseña</FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                                 <Input
                                                     {...field}
                                                     type={showPassword ? 'text' : 'password'}
@@ -131,11 +132,16 @@ export default function ResetPasswordPage() {
                                                     className="pl-9 pr-10 h-11"
                                                     disabled={isLoading}
                                                 />
-                                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                >
                                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                                 </button>
                                             </div>
                                         </FormControl>
+                                        <FormDescription>Mínimo 6 caracteres</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -146,17 +152,24 @@ export default function ResetPasswordPage() {
                                 name="confirmPassword"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Confirmar contraseña</FormLabel>
+                                        <FormLabel>Confirmar Contraseña</FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                                 <Input
                                                     {...field}
-                                                    type={showPassword ? 'text' : 'password'}
+                                                    type={showConfirmPassword ? 'text' : 'password'}
                                                     placeholder="••••••" 
-                                                    className="pl-9 h-11"
+                                                    className="pl-9 pr-10 h-11"
                                                     disabled={isLoading}
                                                 />
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                >
+                                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                </button>
                                             </div>
                                         </FormControl>
                                         <FormMessage />

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse, Eye, EyeOff } from 'lucide-react';
+import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -213,7 +213,7 @@ export default function RegisterPage() {
 
                                 {/* ── Credentials ── */}
                                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                    Credenciales de acceso
+                                    Acceso
                                 </p>
 
                                 <FormField
@@ -221,9 +221,12 @@ export default function RegisterPage() {
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Email</FormLabel>
+                                            <FormLabel>Correo Electrónico</FormLabel>
                                             <FormControl>
-                                                <Input {...field} type="email" placeholder="nombre@email.com" autoComplete="email" className="h-11" />
+                                                <div className="relative">
+                                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                    <Input {...field} type="email" placeholder="nombre@email.com" autoComplete="email" className="pl-9 h-11" />
+                                                </div>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -238,12 +241,13 @@ export default function RegisterPage() {
                                             <FormLabel>Contraseña</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
+                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                                     <Input 
                                                         {...field} 
                                                         type={showPassword ? "text" : "password"} 
-                                                        placeholder="••••••••" 
+                                                        placeholder="••••••" 
                                                         autoComplete="new-password" 
-                                                        className="h-11 pr-10" 
+                                                        className="pl-9 pr-10 h-11" 
                                                     />
                                                     <button
                                                         type="button"
@@ -269,15 +273,16 @@ export default function RegisterPage() {
                                     name="confirmPassword"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Confirmar contraseña</FormLabel>
+                                            <FormLabel>Confirmar Contraseña</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
+                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                                     <Input 
                                                         {...field} 
                                                         type={showConfirmPassword ? "text" : "password"} 
-                                                        placeholder="••••••••" 
+                                                        placeholder="••••••" 
                                                         autoComplete="new-password" 
-                                                        className="h-11 pr-10" 
+                                                        className="pl-9 pr-10 h-11" 
                                                     />
                                                     <button
                                                         type="button"

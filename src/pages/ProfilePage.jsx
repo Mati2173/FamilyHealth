@@ -361,23 +361,27 @@ export default function ProfilePage() {
                                         <FormLabel>Correo Electrónico</FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                                <Input {...field} className="pl-9 h-11" />
+                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                <Input {...field} type="email" placeholder="nombre@email.com" className="pl-9 h-11" />
                                             </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                            <Separator className="my-4" />
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                Cambiar Contraseña
+                            </p>
                             <FormField
                                 control={securityForm.control}
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Nueva Contraseña</FormLabel>
+                                        <FormLabel>Contraseña</FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                                 <Input 
                                                     {...field} 
                                                     type={showPassword ? "text" : "password"} 
@@ -397,10 +401,10 @@ export default function ProfilePage() {
                                                 </button>
                                             </div>
                                         </FormControl>
-                                        <FormMessage />
                                         <FormDescription>
-                                            Dejalo vacío si no querés cambiarla.
+                                            Dejalo vacío si no querés cambiarla. Mínimo 6 caracteres.
                                         </FormDescription>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -409,10 +413,10 @@ export default function ProfilePage() {
                                 name="confirmPassword"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                                        <FormLabel>Confirmar Contraseña</FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                                 <Input
                                                     {...field}
                                                     type={showConfirmPassword ? "text" : "password"}
