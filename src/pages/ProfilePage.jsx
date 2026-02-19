@@ -55,14 +55,25 @@ const securitySchema = z.object({
         .refine(val => !val || val.length >= 6, {
             message: 'Mínimo 6 caracteres',
         }),
-});
+    
+    confirmPassword: z
+        .string()
+        .optional()
+}).refine(
+    (data) => data.password && data.password === data.confirmPassword,
+    {
+        message: 'Las contraseñas no coinciden',
+        path: ['confirmPassword'],
+    }
+);
 
 export default function ProfilePage() {
-    const { user, profile, updateUserProfile, updateUserAccount, refreshProfile } = useAuth();
+    const { user, profile, updateUserProfile, updateUserAccount } = useAuth();
     const { toast } = useToast();
     const [isLoadingProfile, setIsLoadingProfile] = useState(false);
     const [isLoadingSecurity, setIsLoadingSecurity] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const profileForm = useForm({
         resolver: zodResolver(profileSchema),
@@ -80,6 +91,7 @@ export default function ProfilePage() {
         defaultValues: {
             email: user?.email || '',
             password: '',
+            confirmPassword: '',
         },
     });
 
@@ -105,6 +117,7 @@ export default function ProfilePage() {
             resetSecurityForm({
                 email: user.email || '',
                 password: '',
+                confirmPassword: '',
             });
         }
     }, [user, resetSecurityForm]);
@@ -122,8 +135,6 @@ export default function ProfilePage() {
                 gender: data.gender,
                 is_public: data.is_public,
             });
-
-            await refreshProfile();
 
             toast({
                 title: '✓ Perfil actualizado',
@@ -390,6 +401,38 @@ export default function ProfilePage() {
                                         <FormDescription>
                                             Dejalo vacío si no querés cambiarla.
                                         </FormDescription>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={securityForm.control}
+                                name="confirmPassword"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input
+                                                    {...field}
+                                                    type={showConfirmPassword ? "text" : "password"}
+                                                    placeholder="••••••"
+                                                    className="pl-9 pr-10 h-11"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                >
+                                                    {showConfirmPassword ? (
+                                                        <EyeOff className="h-4 w-4" />
+                                                    ) : (
+                                                        <Eye className="h-4 w-4" />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
