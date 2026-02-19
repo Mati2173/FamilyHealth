@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
     }, [user]);
 
     // Registers a new user with email and password, and creates user profile
-    async function signUp({ email, password, fullName, heightCm, birthDate, gender }) {
+    async function signUp({ email, password, fullName, heightCm, birthDate, gender, activityLevel }) {
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -77,6 +77,7 @@ export function AuthProvider({ children }) {
                     height_cm: heightCm,
                     birth_date: birthDate,
                     gender: gender,
+                    activity_level: activityLevel,
                     is_public: false,
                 }
             }

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { ACTIVITY_LEVELS, ACTIVITY_LEVEL_OPTIONS } from '@/constants'
 
 const registerSchema = z.object({
     fullName: z
@@ -52,6 +54,9 @@ const registerSchema = z.object({
         required_error: 'Seleccioná un género',
     }),
 
+    activityLevel: z.enum(Object.keys(ACTIVITY_LEVELS), {
+        required_error: 'Seleccioná un nivel de actividad física',
+    }),
 }).refine(
     (data) => data.password === data.confirmPassword,
     {
@@ -77,7 +82,8 @@ export default function RegisterPage() {
             confirmPassword: '',
             heightCm: '',
             birthDate: '',
-            gender: undefined,
+            gender: '',
+            activityLevel: '',
         },
     });
 
@@ -92,6 +98,7 @@ export default function RegisterPage() {
                 heightCm: parseFloat(data.heightCm),
                 birthDate: data.birthDate,
                 gender: data.gender,
+                activityLevel: parseInt(data.activityLevel),
             });
 
             toast({
@@ -132,6 +139,13 @@ export default function RegisterPage() {
                         <CardDescription>Completá todos los campos para comenzar</CardDescription>
                     </CardHeader>
                     <CardContent>
+                        <Alert className="mb-4 border-primary/20 bg-primary/5">
+                            <Info className="h-4 w-4 text-primary" />
+                            <AlertDescription className="text-xs text-muted-foreground">
+                                <span className="font-semibold">Importante:</span> Estos datos solicitados son los que la balanza requiere para calcular tus métricas de salud.
+                            </AlertDescription>
+                        </Alert>
+
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
 
@@ -204,6 +218,34 @@ export default function RegisterPage() {
                                             <FormControl>
                                                 <Input {...field} type="date" className="h-11" max={new Date().toISOString().split('T')[0]} />
                                             </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="activityLevel"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Nivel de actividad física</FormLabel>
+                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger className="h-11">
+                                                        <SelectValue placeholder="Seleccionar" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {ACTIVITY_LEVEL_OPTIONS.map(option => (
+                                                        <SelectItem key={option.value} value={option.value}>
+                                                            {option.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormDescription className="text-xs">
+                                                {field.value && ACTIVITY_LEVELS[field.value].description} (Ejemplo: {ACTIVITY_LEVELS[field.value].example})
+                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}

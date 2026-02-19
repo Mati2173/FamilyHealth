@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Save, User as UserIcon, Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Save, User as UserIcon, Lock, Mail, Eye, EyeOff, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast }  from '@/hooks/use-toast';
+import { ACTIVITY_LEVELS, ACTIVITY_LEVEL_OPTIONS } from '@/constants'
 
 const profileSchema = z.object({
     full_name: z
@@ -40,6 +41,10 @@ const profileSchema = z.object({
 
     gender: z.enum(['masculino', 'femenino'], {
         required_error: 'Seleccioná un género',
+    }),
+
+    activityLevel: z.enum(Object.keys(ACTIVITY_LEVELS), {
+        required_error: 'Seleccioná un nivel de actividad física',
     }),
 
     is_public: z.boolean(),
@@ -82,6 +87,7 @@ export default function ProfilePage() {
             height_cm: profile?.height_cm?.toString() ?? '',
             birth_date: profile?.birth_date ?? '',
             gender: profile?.gender ?? '',
+            activityLevel: profile?.activity_level?.toString() ?? '',
             is_public: profile?.is_public ?? false,
         },
     });
@@ -106,6 +112,7 @@ export default function ProfilePage() {
                 height_cm: profile.height_cm?.toString() ?? '',
                 birth_date: profile.birth_date ?? '',
                 gender: profile.gender ?? '',
+                activityLevel: profile.activity_level?.toString() ?? '',
                 is_public: profile.is_public ?? false,
             });
         }
@@ -133,6 +140,7 @@ export default function ProfilePage() {
                 height_cm: parseFloat(data.height_cm),
                 birth_date: data.birth_date,
                 gender: data.gender,
+                activity_level: data.activityLevel,
                 is_public: data.is_public,
             });
 
@@ -277,6 +285,34 @@ export default function ProfilePage() {
                                         <FormControl>
                                             <Input {...field} type="date" className="h-11" max={new Date().toISOString().split('T')[0]} />
                                         </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={profileForm.control}
+                                name="activityLevel"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Nivel de actividad física</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-11">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {ACTIVITY_LEVEL_OPTIONS.map(option => (
+                                                    <SelectItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormDescription className="text-xs">
+                                            {field.value && ACTIVITY_LEVELS[field.value].description} (Ejemplo: {ACTIVITY_LEVELS[field.value].example})
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
