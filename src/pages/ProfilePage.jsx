@@ -60,7 +60,7 @@ const securitySchema = z.object({
         .string()
         .optional()
 }).refine(
-    (data) => data.password && data.password === data.confirmPassword,
+    (data) => !data.password || data.password === data.confirmPassword,
     {
         message: 'Las contraseñas no coinciden',
         path: ['confirmPassword'],
