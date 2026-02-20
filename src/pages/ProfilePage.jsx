@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Save, User as UserIcon, Lock, Mail, Eye, EyeOff, Info, HelpCircle, HeartPulse } from 'lucide-react';
+import { Loader2, Save, User as UserIcon, Lock, Mail, Eye, EyeOff, Info, HelpCircle, HeartPulse, Shield } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast }  from '@/hooks/use-toast';
 import { ACTIVITY_LEVELS, ACTIVITY_LEVEL_OPTIONS } from '@/constants'
 
@@ -47,7 +48,9 @@ const profileSchema = z.object({
     activityLevel: z.enum(Object.keys(ACTIVITY_LEVELS), {
         required_error: 'Seleccioná un nivel de actividad física',
     }),
+});
 
+const privacySchema = z.object({
     is_public: z.boolean(),
 });
 
@@ -77,6 +80,7 @@ export default function ProfilePage() {
     const { user, profile, updateUserProfile, updateUserAccount } = useAuth();
     const { toast } = useToast();
     const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+    const [isLoadingPrivacy, setIsLoadingPrivacy] = useState(false);
     const [isLoadingSecurity, setIsLoadingSecurity] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -90,6 +94,12 @@ export default function ProfilePage() {
             birth_date: profile?.birth_date ?? '',
             gender: profile?.gender ?? '',
             activityLevel: profile?.activity_level?.toString() ?? '',
+        },
+    });
+
+    const privacyForm = useForm({
+        resolver: zodResolver(privacySchema),
+        defaultValues: {
             is_public: profile?.is_public ?? false,
         },
     });
@@ -104,6 +114,7 @@ export default function ProfilePage() {
     });
 
     const { reset: resetProfileForm } = profileForm;
+    const { reset: resetPrivacyForm } = privacyForm;
     const { reset: resetSecurityForm } = securityForm;
 
     // Reset form values when profile data changes
@@ -115,10 +126,12 @@ export default function ProfilePage() {
                 birth_date: profile.birth_date ?? '',
                 gender: profile.gender ?? '',
                 activityLevel: profile.activity_level?.toString() ?? '',
+            });
+            resetPrivacyForm({
                 is_public: profile.is_public ?? false,
             });
         }
-    }, [profile, resetProfileForm]);
+    }, [profile, resetProfileForm, resetPrivacyForm]);
 
     // Reset security form when user changes
     useEffect(() => {
@@ -143,7 +156,6 @@ export default function ProfilePage() {
                 birth_date: data.birth_date,
                 gender: data.gender,
                 activity_level: data.activityLevel,
-                is_public: data.is_public,
             });
 
             toast({
@@ -158,6 +170,33 @@ export default function ProfilePage() {
             });
         } finally {
             setIsLoadingProfile(false);
+        }
+    }
+
+    async function onSubmitPrivacy(data) {
+        if (!profile?.id) return;
+
+        setIsLoadingPrivacy(true);
+        
+        try {
+            await updateUserProfile({
+                is_public: data.is_public,
+            });
+
+            toast({
+                title: '✓ Privacidad actualizada',
+                description: data.is_public 
+                    ? 'Tu perfil ahora es público para otros familiares.'
+                    : 'Tu perfil ahora es privado.',
+            });
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Error al guardar',
+                description: error?.message || 'No se pudieron guardar los cambios.',
+            });
+        } finally {
+            setIsLoadingPrivacy(false);
         }
     }
 
@@ -206,305 +245,372 @@ export default function ProfilePage() {
                 <div>
                     <h2 className="text-xl font-bold">Mi perfil</h2>
                     <p className="text-sm text-muted-foreground">
-                        Configurá tus datos personales
+                        Configurá tus datos y preferencias
                     </p>
                 </div>
             </div>
 
-            <Form {...profileForm}>
-                <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-5" noValidate>
-                    {/* Personal Info */}
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-                                Datos personales
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <FormField
-                                control={profileForm.control}
-                                name="full_name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Nombre completo</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} placeholder="María García" className="h-11" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+            <Tabs defaultValue="personal" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="personal">
+                        <UserIcon className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Datos personales</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="privacy">
+                        <Shield className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Privacidad</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="security">
+                        <Lock className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Seguridad</span>
+                    </TabsTrigger>
+                </TabsList>
 
-                            <div className="grid grid-cols-2 gap-3">
-                                <FormField
-                                    control={profileForm.control}
-                                    name="height_cm"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Altura</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <Input {...field} type="number" inputMode="decimal" placeholder="170" className="h-11 pr-9" />
-                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                                                        cm
-                                                    </span>
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={profileForm.control}
-                                    name="gender"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Género</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
+                {/* TAB 1: Datos Personales */}
+                <TabsContent value="personal" className="space-y-5 mt-5">
+                    <Form {...profileForm}>
+                        <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-5" noValidate>
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                                        Información básica
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Datos utilizados por la balanza para calcular tus métricas
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <FormField
+                                        control={profileForm.control}
+                                        name="full_name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Nombre completo</FormLabel>
                                                 <FormControl>
-                                                    <SelectTrigger className="h-11">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
+                                                    <Input {...field} placeholder="María García" className="h-11" />
                                                 </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="masculino">Masculino</SelectItem>
-                                                    <SelectItem value="femenino">Femenino</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
-                            <FormField
-                                control={profileForm.control}
-                                name="birth_date"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Fecha de nacimiento</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} type="date" className="h-11" max={new Date().toISOString().split('T')[0]} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <FormField
+                                            control={profileForm.control}
+                                            name="height_cm"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Altura</FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <Input {...field} type="number" inputMode="decimal" placeholder="170" className="h-11 pr-9" />
+                                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                                                                cm
+                                                            </span>
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                            <FormField
-                                control={profileForm.control}
-                                name="activityLevel"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Nivel de actividad física</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger className="h-11">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {ACTIVITY_LEVEL_OPTIONS.map(option => (
-                                                    <SelectItem key={option.value} value={option.value}>
-                                                        {option.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormDescription className="text-xs">
-                                            {field.value && ACTIVITY_LEVELS[field.value].description} (Ejemplo: {ACTIVITY_LEVELS[field.value].example})
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </CardContent>
-                    </Card>
+                                        <FormField
+                                            control={profileForm.control}
+                                            name="gender"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Género</FormLabel>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="h-11">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            <SelectItem value="masculino">Masculino</SelectItem>
+                                                            <SelectItem value="femenino">Femenino</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
 
-                    {/* Balance Setup Help */}
-                    <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3">
-                        <div className="flex items-center gap-2">
-                            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">¿Necesitás actualizar estos datos en tu balanza?</span>
-                        </div>
-                        <Button 
-                            type="button" 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => setShowBalanceSetupDialog(true)}
-                            className="text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 h-8"
-                        >
-                            Ver instrucciones
-                        </Button>
-                    </div>
+                                    <FormField
+                                        control={profileForm.control}
+                                        name="birth_date"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Fecha de nacimiento</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} type="date" className="h-11" max={new Date().toISOString().split('T')[0]} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
-                    {/* Privacy Settings */}
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-                                Privacidad
-                            </CardTitle>
-                            <CardDescription>
-                                Controlá quién puede ver tu progreso
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <FormField
-                                control={profileForm.control}
-                                name="is_public"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <div className="flex items-center justify-between gap-3 rounded-lg border p-4">
-                                            <div className="flex-1">
-                                                <FormLabel className="text-base font-medium">
-                                                    Perfil público
-                                                </FormLabel>
-                                                <FormDescription className="mt-1">
-                                                    {field.value
-                                                        ? 'Tus mediciones son visibles para otros familiares autenticados.'
-                                                        : 'Solo vos podés ver tus mediciones.'
-                                                    }
+                                    <FormField
+                                        control={profileForm.control}
+                                        name="activityLevel"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Nivel de actividad física</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger className="h-11">
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {ACTIVITY_LEVEL_OPTIONS.map(option => (
+                                                            <SelectItem key={option.value} value={option.value}>
+                                                                {option.label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormDescription className="text-xs">
+                                                    {field.value && ACTIVITY_LEVELS[field.value].description} (Ejemplo: {ACTIVITY_LEVELS[field.value].example})
                                                 </FormDescription>
-                                            </div>
-                                            <FormControl>
-                                                <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                            </FormControl>
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </CardContent>
-                    </Card>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </CardContent>
+                            </Card>
 
-                    {/* Submit Button */}
-                    <Button type="submit" className="w-full h-11" disabled={isLoadingProfile || !profileForm.formState.isDirty}>
-                        {isLoadingProfile ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Guardando...
-                            </>
-                        ) : (
-                            <>
-                                <Save className="mr-2 h-4 w-4" />
-                                    Guardar cambios
-                            </>
-                        )}
-                    </Button>
-                </form>
-            </Form>
-
-            <Separator className="my-8" />
-
-            {/* Security Settings */}
-            <Card>
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                        <Lock className="h-4 w-4" /> Seguridad de la cuenta
-                    </CardTitle>
-                    <CardDescription>Administrá tu acceso y credenciales</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...securityForm}>
-                        <form onSubmit={securityForm.handleSubmit(onSubmitSecurity)} className="space-y-4">
-                            <FormField
-                                control={securityForm.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Correo Electrónico</FormLabel>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                <Input {...field} type="email" placeholder="nombre@email.com" className="pl-9 h-11" />
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Separator className="my-4" />
-                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                Cambiar Contraseña
-                            </p>
-                            <FormField
-                                control={securityForm.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Contraseña</FormLabel>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                <Input 
-                                                    {...field} 
-                                                    type={showPassword ? "text" : "password"} 
-                                                    placeholder="••••••" 
-                                                    className="pl-9 pr-10 h-11" 
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                                                >
-                                                    {showPassword ? (
-                                                        <EyeOff className="h-4 w-4" />
-                                                    ) : (
-                                                        <Eye className="h-4 w-4" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </FormControl>
-                                        <FormDescription>
-                                            Dejalo vacío si no querés cambiarla. Mínimo 6 caracteres.
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={securityForm.control}
-                                name="confirmPassword"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Confirmar Contraseña</FormLabel>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                <Input
-                                                    {...field}
-                                                    type={showConfirmPassword ? "text" : "password"}
-                                                    placeholder="••••••"
-                                                    className="pl-9 pr-10 h-11"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                                                >
-                                                    {showConfirmPassword ? (
-                                                        <EyeOff className="h-4 w-4" />
-                                                    ) : (
-                                                        <Eye className="h-4 w-4" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="flex justify-end">
-                                <Button type="submit" disabled={isLoadingSecurity || !securityForm.formState.isDirty}>
-                                    {isLoadingSecurity && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Actualizar Credenciales
+                            {/* Balance Setup Help */}
+                            <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                    <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                    <span className="text-sm font-medium text-blue-900 dark:text-blue-100">¿Necesitás actualizar estos datos en tu balanza?</span>
+                                </div>
+                                <Button 
+                                    type="button" 
+                                    variant="ghost" 
+                                    size="sm"
+                                    onClick={() => setShowBalanceSetupDialog(true)}
+                                    className="text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 h-8"
+                                >
+                                    Ver instrucciones
                                 </Button>
                             </div>
+
+                            {/* Submit Button */}
+                            <Button type="submit" className="w-full h-11" disabled={isLoadingProfile || !profileForm.formState.isDirty}>
+                                {isLoadingProfile ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="mr-2 h-4 w-4" />
+                                        Guardar cambios
+                                    </>
+                                )}
+                            </Button>
                         </form>
                     </Form>
-                </CardContent>
-            </Card>
+                </TabsContent>
+
+                {/* TAB 2: Privacidad */}
+                <TabsContent value="privacy" className="space-y-5 mt-5">
+                    <Form {...privacyForm}>
+                        <form onSubmit={privacyForm.handleSubmit(onSubmitPrivacy)} className="space-y-5" noValidate>
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                                        Visibilidad del perfil
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Controlá quién puede ver tu progreso
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <FormField
+                                        control={privacyForm.control}
+                                        name="is_public"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <div className="flex items-center justify-between gap-3 rounded-lg border p-4">
+                                                    <div className="flex-1">
+                                                        <FormLabel className="text-base font-medium">
+                                                            Perfil público
+                                                        </FormLabel>
+                                                        <FormDescription className="mt-1">
+                                                            {field.value
+                                                                ? 'Tus mediciones son visibles para otros familiares autenticados.'
+                                                                : 'Solo vos podés ver tus mediciones.'
+                                                            }
+                                                        </FormDescription>
+                                                    </div>
+                                                    <FormControl>
+                                                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                                    </FormControl>
+                                                </div>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </CardContent>
+                            </Card>
+
+                            {/* Info about privacy */}
+                            <div className="bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                                    <Info className="h-4 w-4" />
+                                    ¿Qué significa perfil público?
+                                </p>
+                                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-1.5 ml-4 list-disc">
+                                    <li><span className="font-semibold">Público:</span> Otros miembros de la familia que hayan iniciado sesión podrán ver tus mediciones en la página "Dashboard familiar"</li>
+                                    <li><span className="font-semibold">Privado:</span> Solo vos podrás ver tus datos. Nadie más tendrá acceso a tus mediciones</li>
+                                </ul>
+                            </div>
+
+                            {/* Submit Button */}
+                            <Button type="submit" className="w-full h-11" disabled={isLoadingPrivacy || !privacyForm.formState.isDirty}>
+                                {isLoadingPrivacy ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="mr-2 h-4 w-4" />
+                                        Guardar cambios
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+                    </Form>
+                </TabsContent>
+
+                {/* TAB 3: Seguridad */}
+                <TabsContent value="security" className="space-y-5 mt-5">
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                                Credenciales de acceso
+                            </CardTitle>
+                            <CardDescription>Administrá tu email y contraseña</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Form {...securityForm}>
+                                <form onSubmit={securityForm.handleSubmit(onSubmitSecurity)} className="space-y-4">
+                                    <FormField
+                                        control={securityForm.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Correo Electrónico</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                        <Input {...field} type="email" placeholder="nombre@email.com" className="pl-9 h-11" />
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    
+                                    <Separator className="my-4" />
+                                    
+                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        Cambiar Contraseña
+                                    </p>
+                                    
+                                    <FormField
+                                        control={securityForm.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Nueva Contraseña</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                        <Input 
+                                                            {...field} 
+                                                            type={showPassword ? "text" : "password"} 
+                                                            placeholder="••••••" 
+                                                            className="pl-9 pr-10 h-11" 
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowPassword(!showPassword)}
+                                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                        >
+                                                            {showPassword ? (
+                                                                <EyeOff className="h-4 w-4" />
+                                                            ) : (
+                                                                <Eye className="h-4 w-4" />
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                </FormControl>
+                                                <FormDescription>
+                                                    Dejalo vacío si no querés cambiarla. Mínimo 6 caracteres.
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    
+                                    <FormField
+                                        control={securityForm.control}
+                                        name="confirmPassword"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Confirmar Contraseña</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                        <Input
+                                                            {...field}
+                                                            type={showConfirmPassword ? "text" : "password"}
+                                                            placeholder="••••••"
+                                                            className="pl-9 pr-10 h-11"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                        >
+                                                            {showConfirmPassword ? (
+                                                                <EyeOff className="h-4 w-4" />
+                                                            ) : (
+                                                                <Eye className="h-4 w-4" />
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    
+                                    <Button type="submit" className="w-full h-11 mt-4" disabled={isLoadingSecurity || !securityForm.formState.isDirty}>
+                                        {isLoadingSecurity ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Actualizando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Save className="mr-2 h-4 w-4" />
+                                                Actualizar credenciales
+                                            </>
+                                        )}
+                                    </Button>
+                                </form>
+                            </Form>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
 
             {/* Balance Setup Dialog */}
             <Dialog open={showBalanceSetupDialog} onOpenChange={setShowBalanceSetupDialog}>
