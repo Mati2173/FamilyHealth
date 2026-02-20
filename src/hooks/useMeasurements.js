@@ -119,10 +119,10 @@ export function useMeasurements({ targetUserId, limit = PAGE_SIZE, autoFetch = t
 }
 
 /**
- * Transform measurements into chart-formatted data
+ * Transform measurements into chart-formatted data for any metric
  * Limits to a specified number of recent days and averages multiple entries per day
  */
-export function useWeightChartData(measurements, maxDays = 30) {
+export function useMetricChartData(measurements, metricField = 'weight_kg', maxDays = 30) {
     if (!measurements?.length) return [];
 
     // Group measurements by day (using local date string as key)
@@ -131,24 +131,42 @@ export function useWeightChartData(measurements, maxDays = 30) {
     // Iterate in reverse to maintain chronological order when grouping
     [...measurements].reverse().forEach((m) => {
         const dateObj = new Date(m.measured_at);
-
         const dayKey = format(dateObj, "yyyy-MM-dd");
         
         if (!byDay.has(dayKey)) {
-            byDay.set(dayKey, { weights: [], date: dateObj });
+            byDay.set(dayKey, { values: [], date: dateObj });
         }
         
-        byDay.get(dayKey).weights.push(m.weight_kg);
+        // Only add if the metric has a value
+        if (m[metricField] != null) {
+            byDay.get(dayKey).values.push(m[metricField]);
+        }
     });
 
     // Transform grouped data into chart format, limiting to maxDays
+    // Only include days that have actual values for this metric
     return [...byDay.entries()]
+        .filter(([_, { values }]) => values.length > 0)
         .slice(-maxDays)
-        .map(([dayKey, { weights, date }]) => ({
+        .map(([dayKey, { values, date }]) => ({
             date,
-            weight: Math.round((weights.reduce((a, b) => a + b, 0) / weights.length) * 10) / 10,
+            value: Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10,
             label: format(date, "dd MMM", { locale: es }),
-            isAverage: weights.length > 1,
-            count: weights.length,
+            isAverage: values.length > 1,
+            count: values.length,
+        }));
+}
+
+/**
+ * Transform weight measurements into chart-formatted data
+ * Limits to a specified number of recent days and averages multiple entries per day
+ */
+export function useWeightChartData(measurements, maxDays = 30) {
+    const chartData = useMetricChartData(measurements, 'weight_kg', maxDays);
+    
+    // Transform the generic data to use 'weight' key instead of 'value' for backwards compatibility
+    return chartData.map(item => ({
+        ...item,
+        weight: item.value
     }));
 }

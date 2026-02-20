@@ -8,18 +8,39 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/AuthContext';
-import { useMeasurements, useWeightChartData } from '@/hooks/useMeasurements';
+import { useMeasurements, useWeightChartData, useMetricChartData } from '@/hooks/useMeasurements';
 import { cn } from '@/lib/utils';
 
-function WeightTooltip({ active, payload, label }) {
+function MetricTooltip({ active, payload, label, unit = 'kg', isPercentage = false, color = 'hsl(var(--primary))' }) {
     if (!active || !payload?.length) return null;
     const point = payload[0]?.payload;
 
     return (
         <div className="rounded-xl border bg-card px-3 py-2 shadow-xl text-sm">
             <p className="text-muted-foreground mb-1">{label}</p>
-            <p className="font-bold text-lg text-primary">
+            <p className="font-bold text-lg" style={{ color }}>
+                {payload[0]?.value?.toFixed(isPercentage ? 1 : 1)}{' '}
+                <span className="text-xs font-normal text-muted-foreground">{unit}</span>
+            </p>
+            {point?.isAverage && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                    Promedio de {point.count} mediciones
+                </p>
+            )}
+        </div>
+    );
+}
+
+function WeightTooltip({ active, payload, label, color = 'hsl(var(--primary))' }) {
+    if (!active || !payload?.length) return null;
+    const point = payload[0]?.payload;
+
+    return (
+        <div className="rounded-xl border bg-card px-3 py-2 shadow-xl text-sm">
+            <p className="text-muted-foreground mb-1">{label}</p>
+            <p className="font-bold text-lg" style={{ color }}>
                 {payload[0]?.value?.toFixed(1)}{' '}
                 <span className="text-xs font-normal text-muted-foreground">kg</span>
             </p>
@@ -73,23 +94,35 @@ export default function DashboardPage() {
 
     const { measurements, latestMeasurement, isLoading, error, totalCount } = useMeasurements({ targetUserId: user?.id });
 
-    const chartData = useWeightChartData(measurements, 30);
+    const weightChartData = useWeightChartData(measurements, 30);
+    const bodyFatChartData = useMetricChartData(measurements, 'body_fat_pct', 30);
+    const muscleChartData = useMetricChartData(measurements, 'muscle_mass_pct', 30);
 
     const { yMin, yMax } = useMemo(() => {
-        if (!chartData.length) return { yMin: 50, yMax: 100 };
+        if (!weightChartData.length) return { yMin: 50, yMax: 100 };
 
-        const weights = chartData.map((d) => d.weight);
+        const weights = weightChartData.map((d) => d.weight);
         const min = Math.min(...weights);
         const max = Math.max(...weights);
         const pad = Math.max((max - min) * 0.2, 2);
         
         return { yMin: Math.floor(min - pad), yMax: Math.ceil(max + pad) };
-    }, [chartData]);
+    }, [weightChartData]);
 
     const weightDelta = useMemo(() => {
-        if (chartData.length < 2) return null;
-        return chartData[chartData.length - 1].weight - chartData[0].weight;
-    }, [chartData]);
+        if (weightChartData.length < 2) return null;
+        return weightChartData[weightChartData.length - 1].weight - weightChartData[0].weight;
+    }, [weightChartData]);
+
+    const bodyFatDelta = useMemo(() => {
+        if (bodyFatChartData.length < 2) return null;
+        return bodyFatChartData[bodyFatChartData.length - 1].value - bodyFatChartData[0].value;
+    }, [bodyFatChartData]);
+
+    const muscleDelta = useMemo(() => {
+        if (muscleChartData.length < 2) return null;
+        return muscleChartData[muscleChartData.length - 1].value - muscleChartData[0].value;
+    }, [muscleChartData]);
 
     if (isLoading) return <DashboardSkeleton />;
 
@@ -137,74 +170,130 @@ export default function DashboardPage() {
                 </Card>
             )}
 
-            {/* ── Weight Chart ──────────────────────────────────────── */}
-            {chartData.length > 0 && (
+            {/* ── Metrics Charts with Tabs ──────────────────────────────────────── */}
+            {(weightChartData.length > 0 || bodyFatChartData.length > 0 || muscleChartData.length > 0) && (
                 <Card>
-                    <CardHeader className="pb-2">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <CardTitle className="text-base">Evolución del peso</CardTitle>
-                                <CardDescription>Últimos {chartData.length} registros</CardDescription>
-                            </div>
-                            {weightDelta !== null && (
-                                <Badge
-                                    className={cn(
-                                        'text-sm font-semibold tabular-nums',
-                                        weightDelta <= 0
-                                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15'
-                                        : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 hover:bg-rose-500/15'
-                                    )}
-                                >
-                                    {weightDelta > 0 ? '+' : ''}{weightDelta.toFixed(1)} kg
-                                </Badge>
-                            )}
-                        </div>
-                    </CardHeader>
-                    <CardContent className="pt-2 pr-2">
-                        <ResponsiveContainer width="100%" height={220}>
-                            <LineChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="hsl(var(--border))"
-                                    vertical={false}
-                                />
-                                <XAxis
-                                    dataKey="label"
-                                    tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    interval="preserveStartEnd"
-                                />
-                                <YAxis
-                                    domain={[yMin, yMax]}
-                                    tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    width={36}
-                                />
-                                
-                                <Tooltip content={<WeightTooltip />} />
-                                
-                                {latestMeasurement && (
-                                    <ReferenceLine
-                                        y={latestMeasurement.weight_kg}
-                                        stroke="hsl(var(--primary))"
-                                        strokeDasharray="4 3"
-                                        strokeOpacity={0.35}
-                                    />
-                                )}
+                    <Tabs defaultValue="weight" className="w-full">
+                        <CardHeader className="pb-3 border-b">
+                            <TabsList className="grid w-full grid-cols-3">
+                                <TabsTrigger value="weight" className="gap-1">
+                                    <Scale className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Peso</span>
+                                </TabsTrigger>
+                                <TabsTrigger value="fat" className="gap-1">
+                                    <Flame className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Grasa</span>
+                                </TabsTrigger>
+                                <TabsTrigger value="muscle" className="gap-1">
+                                    <Dumbbell className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Músculo</span>
+                                </TabsTrigger>
+                            </TabsList>
+                        </CardHeader>
 
-                                <Line
-                                    type="monotone"
-                                    dataKey="weight"
-                                    stroke="hsl(var(--primary))"
-                                    strokeWidth={2.5}
-                                    dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 0 }}
-                                    activeDot={{ r: 6, strokeWidth: 2, stroke: 'hsl(var(--background))' }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </CardContent>
+                        {/* Weight Tab */}
+                        <TabsContent value="weight" className="space-y-4">
+                            <CardHeader className="pb-2 pt-4">
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <CardTitle className="text-base">Evolución del peso</CardTitle>
+                                        <CardDescription>Últimos {weightChartData.length} registros</CardDescription>
+                                    </div>
+                                    {weightDelta !== null && (
+                                        <Badge className="text-sm font-semibold tabular-nums bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15">
+                                            {weightDelta > 0 ? '+' : ''}{weightDelta.toFixed(1)} kg
+                                        </Badge>
+                                    )}
+                                </div>
+                            </CardHeader>
+                            <CardContent className="pt-2 pr-2">
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <LineChart data={weightChartData} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                                        <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                                        <YAxis domain={[yMin, yMax]} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={36} />
+                                        <Tooltip content={<WeightTooltip color="hsl(var(--primary))" />} />
+                                        {latestMeasurement && (
+                                            <ReferenceLine y={latestMeasurement.weight_kg} stroke="hsl(var(--primary))" strokeDasharray="4 3" strokeOpacity={0.35} />
+                                        )}
+                                        <Line type="monotone" dataKey="weight" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 2, stroke: 'hsl(var(--background))' }} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </TabsContent>
+
+                        {/* Body Fat Tab */}
+                        <TabsContent value="fat" className="space-y-4">
+                            {bodyFatChartData.length > 0 ? (
+                                <>
+                                    <CardHeader className="pb-2 pt-4">
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <CardTitle className="text-base">Evolución de grasa corporal (%)</CardTitle>
+                                                <CardDescription>Últimos {bodyFatChartData.length} registros</CardDescription>
+                                            </div>
+                                            {bodyFatDelta !== null && (
+                                                <Badge className="text-sm font-semibold tabular-nums bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 hover:bg-orange-500/15">
+                                                    {bodyFatDelta > 0 ? '+' : ''}{bodyFatDelta.toFixed(1)} %
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="pt-2 pr-2">
+                                        <ResponsiveContainer width="100%" height={220}>
+                                            <LineChart data={bodyFatChartData} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                                                <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                                                <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={36} />
+                                                <Tooltip content={<MetricTooltip unit="%" isPercentage={true} color="rgb(234 88 12)" />} />
+                                                <Line type="monotone" dataKey="value" stroke="rgb(234 88 12)" strokeWidth={2.5} dot={{ r: 3, fill: 'rgb(234 88 12)', strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 2, stroke: 'hsl(var(--background))' }} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </CardContent>
+                                </>
+                            ) : (
+                                <CardContent className="pt-8 text-center text-muted-foreground">
+                                    Sin datos de grasa corporal
+                                </CardContent>
+                            )}
+                        </TabsContent>
+
+                        {/* Muscle Mass Tab */}
+                        <TabsContent value="muscle" className="space-y-4">
+                            {muscleChartData.length > 0 ? (
+                                <>
+                                    <CardHeader className="pb-2 pt-4">
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <CardTitle className="text-base">Evolución de masa muscular (%)</CardTitle>
+                                                <CardDescription>Últimos {muscleChartData.length} registros</CardDescription>
+                                            </div>
+                                            {muscleDelta !== null && (
+                                                <Badge className="text-sm font-semibold tabular-nums bg-blue-500/10 text-blue-500 border border-blue-500/20 hover:bg-blue-500/15">
+                                                    {muscleDelta > 0 ? '+' : ''}{muscleDelta.toFixed(1)} %
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="pt-2 pr-2">
+                                        <ResponsiveContainer width="100%" height={220}>
+                                            <LineChart data={muscleChartData} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                                                <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                                                <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={36} />
+                                                <Tooltip content={<MetricTooltip unit="%" isPercentage={true} color="#3b82f6" />} />
+                                                <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2.5} dot={{ r: 3, fill: '#3b82f6', strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 2, stroke: 'hsl(var(--background))' }} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </CardContent>
+                                </>
+                            ) : (
+                                <CardContent className="pt-8 text-center text-muted-foreground">
+                                    Sin datos de masa muscular
+                                </CardContent>
+                            )}
+                        </TabsContent>
+                    </Tabs>
                 </Card>
             )}
 
