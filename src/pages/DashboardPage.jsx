@@ -92,11 +92,11 @@ function DashboardSkeleton() {
 export default function DashboardPage() {
     const { user, profile } = useAuth();
 
-    const { measurements, latestMeasurement, isLoading, error, totalCount } = useMeasurements({ targetUserId: user?.id });
+    const { measurements, latestMeasurement, isLoading, error, totalCount } = useMeasurements({ targetUserId: user?.id, limit: 20 });
 
-    const weightChartData = useWeightChartData(measurements, 30);
-    const bodyFatChartData = useMetricChartData(measurements, 'body_fat_pct', 30);
-    const muscleChartData = useMetricChartData(measurements, 'muscle_mass_pct', 30);
+    const weightChartData = useWeightChartData(measurements, 20);
+    const bodyFatChartData = useMetricChartData(measurements, 'body_fat_pct', 20);
+    const muscleChartData = useMetricChartData(measurements, 'muscle_mass_pct', 20);
 
     const { yMin, yMax } = useMemo(() => {
         if (!weightChartData.length) return { yMin: 50, yMax: 100 };
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                     <p className="text-sm text-muted-foreground mt-0.5">
                         {totalCount === 0
                             ? 'Todavía no tenés mediciones'
-                            : `${totalCount} medición${totalCount !== 1 ? 'es' : ''} registrada${totalCount !== 1 ? 's' : ''}`
+                            : `${totalCount} ${totalCount !== 1 ? 'mediciones' : 'medición'} registrada${totalCount !== 1 ? 's' : ''}`
                         }
                     </p>
                 </div>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
                             <CardHeader className="pb-2 pt-4">
                                 <div className="flex items-start justify-between">
                                     <div>
-                                        <CardTitle className="text-base">Evolución del peso</CardTitle>
+                                        <CardTitle className="text-base">Evolución del peso (kg)</CardTitle>
                                         <CardDescription>Últimos {weightChartData.length} registros</CardDescription>
                                     </div>
                                     {weightDelta !== null && (

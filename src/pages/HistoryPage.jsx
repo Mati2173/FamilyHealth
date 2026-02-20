@@ -199,7 +199,7 @@ export default function HistoryPage() {
         totalCount,
         fetchMore,
         deleteMeasurement,
-    } = useMeasurements({ targetUserId: user?.id });
+    } = useMeasurements({ targetUserId: user?.id, limit: 10 });
 
     if (isLoading) return <HistorySkeleton />;
 

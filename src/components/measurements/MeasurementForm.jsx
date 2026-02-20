@@ -202,7 +202,7 @@ export function MeasurementForm({ userId, onSave, onSuccess, onCancel }) {
                 <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-4 py-3">
                     <div className="flex items-center gap-2">
                         <HelpCircle className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium text-primary">¿Cómo usa tu balanza?</span>
+                        <span className="text-sm font-medium text-primary">¿Cómo usar la balanza?</span>
                     </div>
                     <Button 
                         type="button" 
@@ -428,10 +428,10 @@ export function MeasurementForm({ userId, onSave, onSuccess, onCancel }) {
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-lg">
                             <Scale className="h-5 w-5" />
-                            Guía de uso de tu balanza
+                            Guía de uso de la balanza
                         </DialogTitle>
                         <DialogDescription>
-                            Instrucciones para obtener todas las mediciones correctamente
+                            Instrucciones para obtener todas las mediciones correctamente en la balanza digital Philco BAP2021PI
                         </DialogDescription>
                     </DialogHeader>
 

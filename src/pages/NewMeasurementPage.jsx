@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Scale } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useMeasurements } from '@/hooks/useMeasurements';
 import MeasurementForm from '@/components/measurements/MeasurementForm';
@@ -27,7 +27,7 @@ export default function NewMeasurementPage() {
                         Registra los datos de tu balanza
                     </p>
                 </div>
-                <Scale className="h-5 w-5 text-muted-foreground" />
+                <PlusCircle className="h-5 w-5 text-muted-foreground" />
             </div>
 
             {/* ── Form ──────────────────────────────────────────── */}

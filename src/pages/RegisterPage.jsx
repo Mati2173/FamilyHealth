@@ -150,7 +150,7 @@ export default function RegisterPage() {
                         <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 mb-5">
                             <div className="flex items-center gap-2">
                                 <Info className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium text-primary">¿Cómo programar tu balanza?</span>
+                                <span className="text-sm font-medium text-primary">¿Cómo programar la balanza?</span>
                             </div>
                             <Button 
                                 type="button" 
@@ -396,7 +396,7 @@ export default function RegisterPage() {
                                 Cómo programar tu balanza
                             </DialogTitle>
                             <DialogDescription>
-                                Guía paso a paso para guardar tus datos en la balanza
+                                Guía paso a paso para guardar tus datos en la balanza Philco BAP2021PI
                             </DialogDescription>
                         </DialogHeader>
 
