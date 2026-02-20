@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail, Info } from 'lucide-react';
+import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail, Info, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ACTIVITY_LEVELS, ACTIVITY_LEVEL_OPTIONS } from '@/constants'
 
@@ -72,6 +73,7 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showBalanceSetupDialog, setShowBalanceSetupDialog] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(registerSchema),
@@ -139,12 +141,21 @@ export default function RegisterPage() {
                         <CardDescription>Completá todos los campos para comenzar</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Alert className="mb-4 border-primary/20 bg-primary/5">
-                            <Info className="h-4 w-4 text-primary" />
-                            <AlertDescription className="text-xs text-muted-foreground">
-                                <span className="font-semibold">Importante:</span> Estos datos solicitados son los que la balanza requiere para calcular tus métricas de salud.
-                            </AlertDescription>
-                        </Alert>
+                        <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 mb-5">
+                            <div className="flex items-center gap-2">
+                                <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">¿Cómo programar tu balanza?</span>
+                            </div>
+                            <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => setShowBalanceSetupDialog(true)}
+                                className="text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 h-8"
+                            >
+                                Ver instrucciones
+                            </Button>
+                        </div>
 
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -367,6 +378,162 @@ export default function RegisterPage() {
                         Iniciá sesión
                     </Link>
                 </p>
+
+                {/* Balance Setup Dialog */}
+                <Dialog open={showBalanceSetupDialog} onOpenChange={setShowBalanceSetupDialog}>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-lg">
+                                <HeartPulse className="h-5 w-5" />
+                                Cómo programar tu balanza
+                            </DialogTitle>
+                            <DialogDescription>
+                                Guía paso a paso para guardar tus datos en la balanza
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-6">
+                            {/* Introducción */}
+                            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                                <p className="text-sm text-blue-900 dark:text-blue-100">
+                                    Para que tu balanza calcule correctamente tus métricas de salud, debes configurar un <span className="font-semibold">perfil de memoria</span> con tus datos personales.
+                                </p>
+                                <p className="text-xs text-blue-800 dark:text-blue-200 mt-2">
+                                    <span className="font-semibold">Nota:</span> El nombre, email y contraseña son solo para tu cuenta en FamilyHealth. La balanza solo necesita género, edad, altura y nivel de actividad.
+                                </p>
+                            </div>
+
+                            <Separator />
+
+                            {/* Paso 1 */}
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-6 w-6 rounded-full bg-primary text-white items-center justify-center text-xs font-semibold flex-shrink-0">
+                                        1
+                                    </div>
+                                    <div className="space-y-2 flex-1">
+                                        <h4 className="font-semibold text-foreground">Selecciona un perfil de memoria</h4>
+                                        <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                                            <li>Presiona el botón <span className="font-semibold">SET</span> en la balanza</li>
+                                            <li>Verás un número parpadeando en la parte inferior izquierda de la pantalla</li>
+                                            <li>Usa las <span className="font-semibold">flechas de los costados</span> para seleccionar un perfil libre (1-10)</li>
+                                            <li><span className="font-semibold">Recomendación:</span> Elige un número que nadie más de tu familia esté usando</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            {/* Paso 2 */}
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-6 w-6 rounded-full bg-primary text-white items-center justify-center text-xs font-semibold flex-shrink-0">
+                                        2
+                                    </div>
+                                    <div className="space-y-2 flex-1">
+                                        <h4 className="font-semibold text-foreground">Configura tus datos personales</h4>
+                                        <p className="text-sm text-muted-foreground mb-2">
+                                            Presiona SET varias veces para ir ingresando cada campo. Los cambios se guardan automáticamente al pasar al siguiente campo.
+                                        </p>
+                                        
+                                        <div className="space-y-3 mt-3">
+                                            <div className="bg-muted/50 rounded-md p-3 space-y-3">
+                                                <div>
+                                                    <p className="text-sm font-semibold text-foreground mb-1">Género / Sexo</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Verás el icono de una persona (hombre o mujer) en la parte izquierda de la pantalla. Usa las <span className="font-semibold">flechas</span> para cambiar entre opciones.
+                                                    </p>
+                                                </div>
+                                                
+                                                <Separator />
+                                                
+                                                <div>
+                                                    <p className="text-sm font-semibold text-foreground mb-1">Edad (AGE)</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Aparece "AGE" a la izquierda. Usa las <span className="font-semibold">flechas arriba/abajo</span> para ajustar tu edad en años.
+                                                    </p>
+                                                </div>
+                                                
+                                                <Separator />
+                                                
+                                                <div>
+                                                    <p className="text-sm font-semibold text-foreground mb-1">Altura (CM)</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Aparece "CM" en pantalla. Usa las <span className="font-semibold">flechas arriba/abajo</span> para establecer tu altura en centímetros.
+                                                    </p>
+                                                </div>
+                                                
+                                                <Separator />
+                                                
+                                                <div>
+                                                    <p className="text-sm font-semibold text-foreground mb-1">Nivel de Actividad (AC-N)</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Aparece "AC-N" donde N es un número del 1 al 6. Usa las <span className="font-semibold">flechas</span> para seleccionar tu nivel:
+                                                    </p>
+                                                    <ul className="text-xs text-muted-foreground mt-1 ml-4 space-y-0.5">
+                                                        <li>• 1-2: Sedentario</li>
+                                                        <li>• 3-4: Moderadamente activo</li>
+                                                        <li>• 5-6: Muy activo</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            {/* Paso 3 */}
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-6 w-6 rounded-full bg-primary text-white items-center justify-center text-xs font-semibold flex-shrink-0">
+                                        3
+                                    </div>
+                                    <div className="space-y-2 flex-1">
+                                        <h4 className="font-semibold text-foreground">Finaliza la configuración</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Al presionar SET después del último campo, verás <span className="font-semibold">"KG"</span> en pantalla. Esto significa que estás listo para pesarte.
+                                        </p>
+                                        <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md p-3 mt-2">
+                                            <p className="text-sm text-green-900 dark:text-green-100 font-semibold mb-1">¡Configuración completa!</p>
+                                            <p className="text-xs text-green-900/80 dark:text-green-100/80">
+                                                Tus datos están guardados en el perfil seleccionado. Ahora ya puedes usar la balanza para tomar mediciones completas.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            {/* Recomendaciones */}
+                            <div className="bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800 rounded-lg p-3">
+                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                                    <Info className="h-4 w-4" />
+                                    Recomendaciones importantes
+                                </p>
+                                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-1 ml-4 list-disc">
+                                    <li>Apunta el número de perfil que elegiste para no olvidarlo</li>
+                                    <li>Recuerda usar siempre el mismo perfil para obtener mediciones consistentes</li>
+                                    <li>Los cambios se guardan automáticamente al avanzar entre campos</li>
+                                    <li>Si cumplís años o cambia tu nivel de actividad, actualiza el perfil repitiendo estos pasos</li>
+                                </ul>
+                            </div>
+
+                            <Separator />
+
+                            {/* Close Button */}
+                            <Button 
+                                onClick={() => setShowBalanceSetupDialog(false)} 
+                                className="w-full"
+                            >
+                                Entendido
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
             </div>
         </div>
