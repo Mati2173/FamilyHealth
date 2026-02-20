@@ -24,7 +24,7 @@ export default function NewMeasurementPage() {
                 <div>
                     <h2 className="text-xl font-bold">Carga tus datos</h2>
                     <p className="text-sm text-muted-foreground">
-                        Registra los datos de tu balanza
+                        Registra los datos de la balanza
                     </p>
                 </div>
                 <PlusCircle className="h-5 w-5 text-muted-foreground" />

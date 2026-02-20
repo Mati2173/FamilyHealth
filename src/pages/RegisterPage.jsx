@@ -393,7 +393,7 @@ export default function RegisterPage() {
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-lg">
                                 <HeartPulse className="h-5 w-5" />
-                                Cómo programar tu balanza
+                                Cómo programar la balanza
                             </DialogTitle>
                             <DialogDescription>
                                 Guía paso a paso para guardar tus datos en la balanza Philco BAP2021PI
@@ -404,7 +404,7 @@ export default function RegisterPage() {
                             {/* Introducción */}
                             <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
                                 <p className="text-sm text-primary">
-                                    Para que tu balanza calcule correctamente tus métricas de salud, debes configurar un <span className="font-semibold">perfil de memoria</span> con tus datos personales.
+                                    Para que la balanza calcule correctamente tus métricas de salud, debes configurar un <span className="font-semibold">perfil de memoria</span> con tus datos personales.
                                 </p>
                                 <p className="text-xs text-primary mt-2">
                                     <span className="font-semibold">Nota:</span> El nombre, email y contraseña son solo para tu cuenta en FamilyHealth. La balanza solo necesita género, edad, altura y nivel de actividad.
