@@ -382,17 +382,17 @@ export default function ProfilePage() {
                             </Card>
 
                             {/* Balance Setup Help */}
-                            <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3">
+                            <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-4 py-3">
                                 <div className="flex items-center gap-2">
-                                    <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                    <span className="text-sm font-medium text-blue-900 dark:text-blue-100">¿Necesitás actualizar estos datos en tu balanza?</span>
+                                    <Info className="h-4 w-4 text-primary" />
+                                    <span className="text-sm font-medium text-primary">¿Necesitás actualizar estos datos en tu balanza?</span>
                                 </div>
                                 <Button 
                                     type="button" 
                                     variant="ghost" 
                                     size="sm"
                                     onClick={() => setShowBalanceSetupDialog(true)}
-                                    className="text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 h-8"
+                                    className="text-primary hover:bg-primary/10 h-8"
                                 >
                                     Ver instrucciones
                                 </Button>
@@ -459,16 +459,22 @@ export default function ProfilePage() {
                             </Card>
 
                             {/* Info about privacy */}
-                            <div className="bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
-                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
-                                    <Info className="h-4 w-4" />
-                                    ¿Qué significa perfil público?
-                                </p>
-                                <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-1.5 ml-4 list-disc">
-                                    <li><span className="font-semibold">Público:</span> Otros miembros de la familia que hayan iniciado sesión podrán ver tus mediciones en la página "Dashboard familiar"</li>
-                                    <li><span className="font-semibold">Privado:</span> Solo vos podrás ver tus datos. Nadie más tendrá acceso a tus mediciones</li>
-                                </ul>
-                            </div>
+                            <Card className="border-primary/20 bg-primary/5">
+                                <CardContent className="pt-4 pb-4">
+                                    <div className="flex gap-3 text-sm">
+                                        <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                                        <div className="space-y-1">
+                                            <p className="font-medium text-primary">
+                                                ¿Qué significa perfil público?
+                                            </p>
+                                            <div className="text-muted-foreground text-xs space-y-1">
+                                                <p><span className="font-semibold">Público:</span> Otros miembros de la familia que hayan iniciado sesión podrán ver tus mediciones en la página "Dashboard familiar"</p>
+                                                <p><span className="font-semibold">Privado:</span> Solo vos podrás ver tus datos. Nadie más tendrá acceso a tus mediciones</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
                             {/* Submit Button */}
                             <Button type="submit" className="w-full h-11" disabled={isLoadingPrivacy || !privacyForm.formState.isDirty}>
@@ -627,8 +633,8 @@ export default function ProfilePage() {
 
                     <div className="space-y-6">
                         {/* Introducción */}
-                        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                            <p className="text-sm text-blue-900 dark:text-blue-100">
+                        <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+                            <p className="text-sm text-primary">
                                 Si actualizaste tus datos personales, es importante que también los actualices en tu <span className="font-semibold">perfil de la balanza</span> para que las mediciones sigan siendo precisas.
                             </p>
                         </div>

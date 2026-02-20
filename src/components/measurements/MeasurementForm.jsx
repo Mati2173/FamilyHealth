@@ -199,17 +199,17 @@ export function MeasurementForm({ userId, onSave, onSuccess, onCancel }) {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" noValidate>
 
                 {/* ── SECTION: Help ────────────────────────────────────────────────── */}
-                <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3">
+                <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-4 py-3">
                     <div className="flex items-center gap-2">
-                        <HelpCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                        <span className="text-sm font-medium text-blue-900 dark:text-blue-100">¿Cómo usa tu balanza?</span>
+                        <HelpCircle className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">¿Cómo usa tu balanza?</span>
                     </div>
                     <Button 
                         type="button" 
                         variant="ghost" 
                         size="sm"
                         onClick={() => setShowHelpDialog(true)}
-                        className="text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 h-8"
+                        className="text-primary hover:bg-primary/10 h-8"
                     >
                         Ver instrucciones
                     </Button>

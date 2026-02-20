@@ -141,17 +141,17 @@ export default function RegisterPage() {
                         <CardDescription>Completá todos los campos para comenzar</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 mb-5">
+                        <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 mb-5">
                             <div className="flex items-center gap-2">
-                                <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">¿Cómo programar tu balanza?</span>
+                                <Info className="h-4 w-4 text-primary" />
+                                <span className="text-sm font-medium text-primary">¿Cómo programar tu balanza?</span>
                             </div>
                             <Button 
                                 type="button" 
                                 variant="ghost" 
                                 size="sm"
                                 onClick={() => setShowBalanceSetupDialog(true)}
-                                className="text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 h-8"
+                                className="text-primary hover:bg-primary/10 h-8"
                             >
                                 Ver instrucciones
                             </Button>
@@ -394,11 +394,11 @@ export default function RegisterPage() {
 
                         <div className="space-y-6">
                             {/* Introducción */}
-                            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                                <p className="text-sm text-blue-900 dark:text-blue-100">
+                            <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+                                <p className="text-sm text-primary">
                                     Para que tu balanza calcule correctamente tus métricas de salud, debes configurar un <span className="font-semibold">perfil de memoria</span> con tus datos personales.
                                 </p>
-                                <p className="text-xs text-blue-800 dark:text-blue-200 mt-2">
+                                <p className="text-xs text-primary mt-2">
                                     <span className="font-semibold">Nota:</span> El nombre, email y contraseña son solo para tu cuenta en FamilyHealth. La balanza solo necesita género, edad, altura y nivel de actividad.
                                 </p>
                             </div>
