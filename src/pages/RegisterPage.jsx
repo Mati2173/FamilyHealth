@@ -396,7 +396,7 @@ export default function RegisterPage() {
                                 Cómo programar la balanza
                             </DialogTitle>
                             <DialogDescription>
-                                Guía paso a paso para guardar tus datos en la balanza Philco BAP2021PI
+                                Guía paso a paso para guardar tus datos en la balanza digital Philco BAP2021PI
                             </DialogDescription>
                         </DialogHeader>
 

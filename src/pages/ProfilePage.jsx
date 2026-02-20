@@ -645,7 +645,7 @@ export default function ProfilePage() {
                             Cómo actualizar tu perfil en la balanza
                         </DialogTitle>
                         <DialogDescription>
-                            Guía paso a paso para actualizar tus datos en la balanza Philco BAP2021PI
+                            Guía paso a paso para actualizar tus datos en la balanza digital Philco BAP2021PI
                         </DialogDescription>
                     </DialogHeader>
 

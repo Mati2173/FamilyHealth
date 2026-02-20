@@ -1,7 +1,7 @@
 # FamilyHealth
 Aplicación web de seguimiento de salud familiar.
 
-Permite a cada integrante de la familia registrar y visualizar la evolución de sus mediciones corporales obtenidas con la balanza **Philco BAP2021PI**: peso, grasa corporal, agua corporal, masa muscular, masa ósea estimada, ingesta calórica recomendada e índice de masa corporal (IMC).
+Permite a cada integrante de la familia registrar y visualizar la evolución de sus mediciones corporales obtenidas con la balanza digital **Philco BAP2021PI**: peso, grasa corporal, agua corporal, masa muscular, masa ósea estimada, ingesta calórica recomendada e índice de masa corporal (IMC).
 
 ## Stack tecnológico
 - Frontend: `React 18` con `Vite`, `Tailwind CSS v3` y componentes `shadcn/ui`

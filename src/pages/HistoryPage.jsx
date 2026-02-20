@@ -210,7 +210,7 @@ export default function HistoryPage() {
                 <div>
                     <h2 className="text-xl font-bold">Historial completo</h2>
                     <p className="text-sm text-muted-foreground">
-                        {totalCount} medición{totalCount !== 1 ? 'es' : ''} registrada{totalCount !== 1 ? 's' : ''}
+                        {totalCount} {totalCount !== 1 ? 'mediciones' : 'medición'} registrada{totalCount !== 1 ? 's' : ''}
                     </p>
                 </div>
                 <History className="h-5 w-5 text-muted-foreground" />
