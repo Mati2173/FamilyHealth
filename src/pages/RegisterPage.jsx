@@ -51,13 +51,19 @@ const registerSchema = z.object({
             { message: 'La fecha debe ser en el pasado' }
         ),
 
-    gender: z.enum(['masculino', 'femenino'], {
-        required_error: 'Seleccioná un género',
-    }),
+    gender: z
+        .string()
+        .min(1, 'Seleccioná un género')
+        .refine((value) => ['masculino', 'femenino'].includes(value), {
+            message: 'Seleccioná un género válido',
+        }),
 
-    activityLevel: z.enum(Object.keys(ACTIVITY_LEVELS), {
-        required_error: 'Seleccioná un nivel de actividad física',
-    }),
+    activityLevel: z
+        .string()
+        .min(1, 'Seleccioná un nivel de actividad física')
+        .refine((value) => Object.keys(ACTIVITY_LEVELS).includes(value), {
+            message: 'Seleccioná un nivel de actividad válido',
+        }),
 }).refine(
     (data) => data.password === data.confirmPassword,
     {
@@ -293,7 +299,7 @@ export default function RegisterPage() {
                                 <FormField
                                     control={form.control}
                                     name="password"
-                                    render={({ field }) => (
+                                    render={({ field, fieldState }) => (
                                         <FormItem>
                                             <FormLabel>Contraseña</FormLabel>
                                             <FormControl>
@@ -319,7 +325,9 @@ export default function RegisterPage() {
                                                     </button>
                                                 </div>
                                             </FormControl>
-                                            <FormDescription>Mínimo 6 caracteres</FormDescription>
+                                            {!fieldState.error && (
+                                                <FormDescription>Mínimo 6 caracteres</FormDescription>
+                                            )}
                                             <FormMessage />
                                         </FormItem>
                                     )}

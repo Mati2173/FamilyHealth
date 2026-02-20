@@ -41,13 +41,19 @@ const profileSchema = z.object({
             { message: 'La fecha debe ser en el pasado' }
         ),
 
-    gender: z.enum(['masculino', 'femenino'], {
-        required_error: 'Seleccioná un género',
-    }),
+    gender: z
+        .string()
+        .min(1, 'Seleccioná un género')
+        .refine((value) => ['masculino', 'femenino'].includes(value), {
+            message: 'Seleccioná un género válido',
+        }),
 
-    activityLevel: z.enum(Object.keys(ACTIVITY_LEVELS), {
-        required_error: 'Seleccioná un nivel de actividad física',
-    }),
+    activityLevel: z
+        .string()
+        .min(1, 'Seleccioná un nivel de actividad física')
+        .refine((value) => Object.keys(ACTIVITY_LEVELS).includes(value), {
+            message: 'Seleccioná un nivel de actividad válido',
+        }),
 });
 
 const privacySchema = z.object({
@@ -113,6 +119,9 @@ export default function ProfilePage() {
         },
     });
 
+    const { formState: securityFormState, trigger: triggerSecurityForm, watch: watchSecurityForm } = securityForm;
+    const passwordValue = watchSecurityForm('password');
+
     const { reset: resetProfileForm } = profileForm;
     const { reset: resetPrivacyForm } = privacyForm;
     const { reset: resetSecurityForm } = securityForm;
@@ -143,6 +152,13 @@ export default function ProfilePage() {
             });
         }
     }, [user, resetSecurityForm]);
+
+    // Keep confirmPassword errors in sync when password changes after submit.
+    useEffect(() => {
+        if (securityFormState.isSubmitted) {
+            triggerSecurityForm('confirmPassword');
+        }
+    }, [passwordValue, securityFormState.isSubmitted, triggerSecurityForm]);
 
     async function onSubmitProfile(data) {
         if (!profile?.id) return;
@@ -532,7 +548,7 @@ export default function ProfilePage() {
                                     <FormField
                                         control={securityForm.control}
                                         name="password"
-                                        render={({ field }) => (
+                                        render={({ field, fieldState }) => (
                                             <FormItem>
                                                 <FormLabel>Nueva Contraseña</FormLabel>
                                                 <FormControl>
@@ -557,9 +573,11 @@ export default function ProfilePage() {
                                                         </button>
                                                     </div>
                                                 </FormControl>
-                                                <FormDescription>
-                                                    Dejalo vacío si no querés cambiarla. Mínimo 6 caracteres.
-                                                </FormDescription>
+                                                {!fieldState.error && (
+                                                    <FormDescription>
+                                                        Dejalo vacío si no querés cambiarla. Mínimo 6 caracteres.
+                                                    </FormDescription>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
