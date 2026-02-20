@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 const schema = z.object({
     email: z.email({ message: 'Correo Electrónico inválido' }),
 });
@@ -52,10 +52,11 @@ export default function ForgotPasswordPage() {
                         <CardDescription>Revisá tu casilla de correo</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <Alert className="border-green-600 bg-green-50 dark:border-green-700 dark:bg-green-950">
-                            <AlertDescription className="text-green-700 dark:text-green-300">
+                        <Alert className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
+                            <AlertTitle className="text-green-900 dark:text-green-100 font-semibold">¡Listo!</AlertTitle>
+                            <AlertDescription className="text-green-900/80 dark:text-green-100/80">
                                 Te enviamos un link para restablecer tu contraseña a{' '}
-                                <span className="font-semibold">{form.getValues('email')}</span>.
+                                <span className="text-green-900 dark:text-green-100 font-semibold">{form.getValues('email')}</span>.
                                 El link es válido por 1 hora.
                             </AlertDescription>
                         </Alert>
