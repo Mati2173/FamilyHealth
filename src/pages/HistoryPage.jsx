@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Scale, Flame, Dumbbell, Droplets, Bone, Utensils, Calculator, Trash2, Calendar } from 'lucide-react';
+import { Scale, Flame, Dumbbell, Droplets, Bone, Utensils, Calculator, Trash2, Calendar, History } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useMeasurements } from '@/hooks/useMeasurements';
 import { Button } from '@/components/ui/button';
@@ -213,7 +213,7 @@ export default function HistoryPage() {
                         {totalCount} medición{totalCount !== 1 ? 'es' : ''} registrada{totalCount !== 1 ? 's' : ''}
                     </p>
                 </div>
-                <Scale className="h-5 w-5 text-muted-foreground" />
+                <History className="h-5 w-5 text-muted-foreground" />
             </div>
 
             {/* ── Error ───────────────────────────────────────────── */}
