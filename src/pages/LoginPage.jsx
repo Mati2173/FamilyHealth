@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import ThemeToggle from '@/components/layout/ThemeToggle';
 
 const loginSchema = z.object({
     email: z.email({ message: 'Email inválido' }),
@@ -46,7 +47,12 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10 relative">
+            {/* Theme Toggle */}
+            <div className="absolute top-4 right-4">
+                <ThemeToggle />
+            </div>
+
             <div className="w-full max-w-md space-y-6">
 
                 {/* Branding */}

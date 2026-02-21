@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import ThemeToggle from '@/components/layout/ThemeToggle';
 const schema = z.object({
     email: z.email({ message: 'Correo Electrónico inválido' }),
 });
@@ -42,7 +43,12 @@ export default function ForgotPasswordPage() {
 
     if (emailSent) {
         return (
-            <div className="flex min-h-screen items-center justify-center p-4 bg-background">
+            <div className="flex min-h-screen items-center justify-center px-4 py-10 relative">
+                {/* Theme Toggle */}
+                <div className="absolute top-4 right-4">
+                    <ThemeToggle />
+                </div>
+
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center space-y-2">
                         <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
@@ -73,7 +79,12 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center p-4 bg-background">
+        <div className="flex min-h-screen items-center justify-center p-4 bg-background relative">
+            {/* Theme Toggle */}
+            <div className="absolute top-4 right-4">
+                <ThemeToggle />
+            </div>
+
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center space-y-2">
                     <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">

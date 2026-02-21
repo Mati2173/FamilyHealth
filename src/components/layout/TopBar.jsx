@@ -1,17 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User, HeartPulse, Moon, Sun, Laptop, Check } from 'lucide-react';
+import { LogOut, User, HeartPulse } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
-import { useTheme } from '@/hooks/useTheme';
+import ThemeToggle from './ThemeToggle';
 
 export default function TopBar({ title }) {
     const { user, profile, signOut } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
-    const { theme, setTheme } = useTheme();
 
     const initials = profile?.full_name
         ? profile.full_name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
@@ -38,32 +37,7 @@ export default function TopBar({ title }) {
 
                 {/* Theme Toggle + User Menu */}
                 <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                                <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                                <span className="sr-only">Toggle theme</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setTheme('light')}>
-                                <Sun className="mr-2 h-4 w-4" />
-                                Claro
-                                {theme === 'light' && <Check className="ml-auto h-4 w-4" />}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setTheme('dark')}>
-                                <Moon className="mr-2 h-4 w-4" />
-                                Oscuro
-                                {theme === 'dark' && <Check className="ml-auto h-4 w-4" />}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setTheme('system')}>
-                                <Laptop className="mr-2 h-4 w-4" />
-                                Sistema
-                                {theme === 'system' && <Check className="ml-auto h-4 w-4" />}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <ThemeToggle />
 
                     {/* User Menu */}
                     <DropdownMenu>

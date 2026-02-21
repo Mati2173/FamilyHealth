@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import ThemeToggle from '@/components/layout/ThemeToggle';
 
 const schema = z.object({
     password: z
@@ -75,7 +76,12 @@ export default function ResetPasswordPage() {
     // If not loading and not authenticated, token is invalid or expired
     if (!loadingTokenVerification && !isAuthenticated) {
         return (
-            <div className="flex min-h-screen items-center justify-center p-4 bg-background">
+            <div className="flex min-h-screen items-center justify-center px-4 py-10 relative">
+                {/* Theme Toggle */}
+                <div className="absolute top-4 right-4">
+                    <ThemeToggle />
+                </div>
+
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center space-y-2">
                         <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
@@ -104,7 +110,12 @@ export default function ResetPasswordPage() {
 
     // If authenticated, show the reset password form
     return (
-        <div className="flex min-h-screen items-center justify-center p-4 bg-background">
+        <div className="flex min-h-screen items-center justify-center p-4 bg-background relative">
+            {/* Theme Toggle */}
+            <div className="absolute top-4 right-4">
+                <ThemeToggle />
+            </div>
+
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center space-y-2">
                     <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">

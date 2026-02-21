@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import ThemeToggle from '@/components/layout/ThemeToggle';
 import { ACTIVITY_LEVELS, ACTIVITY_LEVEL_OPTIONS } from '@/constants'
 
 const registerSchema = z.object({
@@ -129,7 +130,12 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10">
+        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10 relative">
+            {/* Theme Toggle */}
+            <div className="absolute top-4 right-4">
+                <ThemeToggle />
+            </div>
+
             <div className="w-full max-w-md space-y-6">
                 {/* Branding */}
                 <div className="flex flex-col items-center gap-2 text-center">
