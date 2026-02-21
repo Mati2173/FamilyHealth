@@ -44,6 +44,16 @@ export default function ForgotPasswordPage() {
     if (emailSent) {
         return (
             <div className="flex min-h-screen items-center justify-center px-4 py-10 relative">
+                {/* Back to Login */}
+                <div className="absolute top-4 left-4">
+                    <Button variant="ghost" size="icon" asChild>
+                        <Link to="/login">
+                            <ArrowLeft className="h-5 w-5" />
+                            <span className="sr-only">Volver al inicio de sesión</span>
+                        </Link>
+                    </Button>
+                </div>
+
                 {/* Theme Toggle */}
                 <div className="absolute top-4 right-4">
                     <ThemeToggle />
@@ -80,6 +90,16 @@ export default function ForgotPasswordPage() {
 
     return (
         <div className="flex min-h-screen items-center justify-center p-4 bg-background relative">
+            {/* Back to Login */}
+            <div className="absolute top-4 left-4">
+                <Button variant="ghost" size="icon" asChild>
+                    <Link to="/login">
+                        <ArrowLeft className="h-5 w-5" />
+                        <span className="sr-only">Volver al inicio de sesión</span>
+                    </Link>
+                </Button>
+            </div>
+
             {/* Theme Toggle */}
             <div className="absolute top-4 right-4">
                 <ThemeToggle />

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail, Info, HelpCircle } from 'lucide-react';
+import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail, Info, HelpCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -131,6 +131,16 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10 relative">
+            {/* Back to Login */}
+            <div className="absolute top-4 left-4">
+                <Button variant="ghost" size="icon" asChild>
+                    <Link to="/login">
+                        <ArrowLeft className="h-5 w-5" />
+                        <span className="sr-only">Volver al inicio de sesión</span>
+                    </Link>
+                </Button>
+            </div>
+
             {/* Theme Toggle */}
             <div className="absolute top-4 right-4">
                 <ThemeToggle />
