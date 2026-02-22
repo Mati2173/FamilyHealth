@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail, Info, HelpCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail, Info, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,10 +11,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import ThemeToggle from '@/components/layout/ThemeToggle';
+import AuthLayout from '@/components/layout/AuthLayout';
 import { ACTIVITY_LEVELS, ACTIVITY_LEVEL_OPTIONS } from '@/constants'
 
 const registerSchema = z.object({
@@ -130,36 +129,20 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10 relative">
-            {/* Back to Login */}
-            <div className="absolute top-4 left-4">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link to="/login">
-                        <ArrowLeft className="h-5 w-5" />
-                        <span className="sr-only">Volver al inicio de sesión</span>
-                    </Link>
-                </Button>
-            </div>
-
-            {/* Theme Toggle */}
-            <div className="absolute top-4 right-4">
-                <ThemeToggle />
-            </div>
-
-            <div className="w-full max-w-md space-y-6">
-                {/* Branding */}
-                <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary text-primary-foreground">
-                        <HeartPulse className="h-6 w-6" />
-                    </div>
-                    <h1 className="text-2xl font-bold tracking-tight">FamilyHealth</h1>
-                    <p className="text-sm text-muted-foreground">Creá tu cuenta familiar</p>
-                </div>
-
-                {/* Sign Up Card */}
+        <AuthLayout 
+            showBackButton={true} 
+            backTo="/login"
+            brandingSubtitle="Creá tu cuenta familiar"
+        >
+            {/* Sign Up Card */}
                 <Card>
                     <CardHeader className="pb-4">
-                        <CardTitle className="text-lg">Registro</CardTitle>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <div className="flex h-8 w-8 rounded-full bg-primary/10 items-center justify-center">
+                                <UserPlus className="h-4 w-4 text-primary" />
+                            </div>
+                            Registro
+                        </CardTitle>
                         <CardDescription>Completá todos los campos para comenzar</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -558,8 +541,6 @@ export default function RegisterPage() {
                         </div>
                     </DialogContent>
                 </Dialog>
-
-            </div>
-        </div>
+        </AuthLayout>
     );
 }

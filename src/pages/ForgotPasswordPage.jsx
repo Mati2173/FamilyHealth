@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse, Mail, ArrowLeft } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft, KeyRound } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import ThemeToggle from '@/components/layout/ThemeToggle';
+import AuthLayout from '@/components/layout/AuthLayout';
 const schema = z.object({
     email: z.email({ message: 'Correo Electrónico inválido' }),
 });
@@ -43,28 +43,19 @@ export default function ForgotPasswordPage() {
 
     if (emailSent) {
         return (
-            <div className="flex min-h-screen items-center justify-center px-4 py-10 relative">
-                {/* Back to Login */}
-                <div className="absolute top-4 left-4">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link to="/login">
-                            <ArrowLeft className="h-5 w-5" />
-                            <span className="sr-only">Volver al inicio de sesión</span>
-                        </Link>
-                    </Button>
-                </div>
-
-                {/* Theme Toggle */}
-                <div className="absolute top-4 right-4">
-                    <ThemeToggle />
-                </div>
-
+            <AuthLayout 
+                showBackButton={true} 
+                backTo="/login"
+                brandingSubtitle="Revisa tu correo electrónico"
+            >
                 <Card className="w-full max-w-md">
-                    <CardHeader className="text-center space-y-2">
-                        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                            <Mail className="h-6 w-6 text-primary" />
-                        </div>
-                        <CardTitle className="text-2xl">Email enviado</CardTitle>
+                    <CardHeader className="pb-4">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <div className="flex h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/20 items-center justify-center">
+                                <Mail className="h-4 w-4 text-green-600 dark:text-green-400" />
+                            </div>
+                            Email enviado
+                        </CardTitle>
                         <CardDescription>Revisá tu casilla de correo</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -76,7 +67,7 @@ export default function ForgotPasswordPage() {
                                 El link es válido por 1 hora.
                             </AlertDescription>
                         </Alert>
-                        <Button asChild variant="outline" className="w-full">
+                        <Button asChild variant="outline" className="w-full h-11">
                             <Link to="/login">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
                                 Volver al inicio de sesión
@@ -84,33 +75,24 @@ export default function ForgotPasswordPage() {
                         </Button>
                     </CardContent>
                 </Card>
-            </div>
+            </AuthLayout>
         );
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center p-4 bg-background relative">
-            {/* Back to Login */}
-            <div className="absolute top-4 left-4">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link to="/login">
-                        <ArrowLeft className="h-5 w-5" />
-                        <span className="sr-only">Volver al inicio de sesión</span>
-                    </Link>
-                </Button>
-            </div>
-
-            {/* Theme Toggle */}
-            <div className="absolute top-4 right-4">
-                <ThemeToggle />
-            </div>
-
+        <AuthLayout 
+            showBackButton={true} 
+            backTo="/login"
+            brandingSubtitle="Recuperá el acceso a tu cuenta"
+        >
             <Card className="w-full max-w-md">
-                <CardHeader className="text-center space-y-2">
-                    <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                        <HeartPulse className="h-6 w-6 text-primary" />
-                    </div>
-                    <CardTitle className="text-2xl">Recuperar contraseña</CardTitle>
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="flex h-8 w-8 rounded-full bg-primary/10 items-center justify-center">
+                            <KeyRound className="h-4 w-4 text-primary" />
+                        </div>
+                        Recuperar contraseña
+                    </CardTitle>
                     <CardDescription>Ingresá tu email y te enviaremos un link para restablecerla</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -153,6 +135,6 @@ export default function ForgotPasswordPage() {
                     </Form>
                 </CardContent>
             </Card>
-        </div>
+        </AuthLayout>
     );
 }

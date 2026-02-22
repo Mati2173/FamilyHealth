@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse, Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Lock, Mail, LogIn } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import ThemeToggle from '@/components/layout/ThemeToggle';
+import AuthLayout from '@/components/layout/AuthLayout';
 
 const loginSchema = z.object({
     email: z.email({ message: 'Email inválido' }),
@@ -47,27 +47,16 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10 relative">
-            {/* Theme Toggle */}
-            <div className="absolute top-4 right-4">
-                <ThemeToggle />
-            </div>
-
-            <div className="w-full max-w-md space-y-6">
-
-                {/* Branding */}
-                <div className="flex flex-col items-center gap-2 text-center">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary text-primary-foreground">
-                        <HeartPulse className="h-6 w-6" />
-                    </div>
-                    <h1 className="text-2xl font-bold tracking-tight">FamilyHealth</h1>
-                    <p className="text-sm text-muted-foreground">Seguimiento de salud familiar</p>
-                </div>
-
-                {/* Sign In Form */}
+        <AuthLayout>
+            {/* Sign In Form */}
                 <Card>
                     <CardHeader className="pb-4">
-                        <CardTitle className="text-lg">Iniciar sesión</CardTitle>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <div className="flex h-8 w-8 rounded-full bg-primary/10 items-center justify-center">
+                                <LogIn className="h-4 w-4 text-primary" />
+                            </div>
+                            Iniciar sesión
+                        </CardTitle>
                         <CardDescription>Ingresá con tu cuenta familiar</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -149,7 +138,6 @@ export default function LoginPage() {
                         Registrate
                     </Link>
                 </p>
-            </div>
-        </div>
+        </AuthLayout>
     );
 }

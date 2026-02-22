@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, HeartPulse, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Loader2, HeartPulse, Lock, Eye, EyeOff, ArrowLeft, XCircle, KeyRound } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import ThemeToggle from '@/components/layout/ThemeToggle';
+import AuthLayout from '@/components/layout/AuthLayout';
 
 const schema = z.object({
     password: z
@@ -76,19 +76,20 @@ export default function ResetPasswordPage() {
     // If not loading and not authenticated, token is invalid or expired
     if (!loadingTokenVerification && !isAuthenticated) {
         return (
-            <div className="flex min-h-screen items-center justify-center px-4 py-10 relative">
-                {/* Theme Toggle */}
-                <div className="absolute top-4 right-4">
-                    <ThemeToggle />
-                </div>
-
+            <AuthLayout 
+                showBackButton={true} 
+                backTo="/forgot-password"
+                brandingSubtitle="Error al verificar el enlace"
+            >
                 <Card className="w-full max-w-md">
-                    <CardHeader className="text-center space-y-2">
-                        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                            <HeartPulse className="h-6 w-6 text-primary" />
-                        </div>
-                        <CardTitle className="text-2xl">Token inválido</CardTitle>
-                        <CardDescription>El enlace para restablecer tu contraseña no es válido o ha expirado.</CardDescription>
+                    <CardHeader className="pb-4">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <div className="flex h-8 w-8 rounded-full bg-red-100 dark:bg-red-900/20 items-center justify-center">
+                                <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                            </div>
+                            Token inválido
+                        </CardTitle>
+                        <CardDescription>El enlace para restablecer tu contraseña no es válido o ha expirado</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <Alert className="border-red-600 bg-red-50 dark:border-red-700 dark:bg-red-950">
@@ -96,7 +97,7 @@ export default function ResetPasswordPage() {
                                 Por favor, solicitá un nuevo enlace de restablecimiento de contraseña.
                             </AlertDescription>
                         </Alert>
-                        <Button asChild variant="outline" className="w-full">
+                        <Button asChild variant="outline" className="w-full h-11">
                             <Link to="/forgot-password">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
                                 Volver a solicitar enlace
@@ -104,24 +105,24 @@ export default function ResetPasswordPage() {
                         </Button>
                     </CardContent>
                 </Card>
-            </div>
+            </AuthLayout>
         );
     }
 
     // If authenticated, show the reset password form
     return (
-        <div className="flex min-h-screen items-center justify-center p-4 bg-background relative">
-            {/* Theme Toggle */}
-            <div className="absolute top-4 right-4">
-                <ThemeToggle />
-            </div>
-
+        <AuthLayout 
+            showBranding={true}
+            brandingSubtitle="Establecé una nueva contraseña"
+        >
             <Card className="w-full max-w-md">
-                <CardHeader className="text-center space-y-2">
-                    <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                        <HeartPulse className="h-6 w-6 text-primary" />
-                    </div>
-                    <CardTitle className="text-2xl">Nueva contraseña</CardTitle>
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="flex h-8 w-8 rounded-full bg-primary/10 items-center justify-center">
+                            <KeyRound className="h-4 w-4 text-primary" />
+                        </div>
+                        Nueva contraseña
+                    </CardTitle>
                     <CardDescription>Ingresá tu nueva contraseña</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -201,6 +202,6 @@ export default function ResetPasswordPage() {
                     </Form>
                 </CardContent>
             </Card>
-        </div>
+        </AuthLayout>
     );
 }
