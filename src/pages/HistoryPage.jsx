@@ -171,13 +171,17 @@ function MeasurementCard({ measurement, onDelete }) {
 function HistorySkeleton() {
     return (
         <div className="space-y-4">
+            {/* ── Header ──────────────────────────────────────────── */}
             <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                    <Skeleton className="h-7 w-40" />
-                    <Skeleton className="h-4 w-44" />
+                <div>
+                    <h2 className="text-xl font-bold">Historial completo</h2>
+                    <p className="text-sm text-muted-foreground">
+                        Cargando mediciones...
+                    </p>
                 </div>
-                <Skeleton className="h-5 w-5 rounded" />
+                <History className="h-5 w-5 text-muted-foreground" />
             </div>
+
             <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
                     <Skeleton key={i} className="h-32 w-full rounded-2xl" />

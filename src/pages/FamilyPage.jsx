@@ -127,17 +127,21 @@ function FamilyMemberCard({ member, isCurrentUser, className }) {
 function FamilySkeleton() {
     return (
         <div className="space-y-4">
+            {/* ── Header ──────────────────────────────────────────── */}
             <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                    <Skeleton className="h-7 w-44" />
-                    <Skeleton className="h-4 w-56" />
+                <div>
+                    <h2 className="text-xl font-bold">Dashboard familiar</h2>
+                    <p className="text-sm text-muted-foreground">
+                        Cargando perfiles públicos...
+                    </p>
                 </div>
-                <Skeleton className="h-5 w-5 rounded" />
+                <Users className="h-5 w-5 text-muted-foreground" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[1, 2, 3, 4].map((i) => (
-                    <Skeleton key={i} className="h-64 w-full rounded-2xl" />
-                ))}
+
+            <div className="grid grid-cols-1 gap-4">
+                <Skeleton className="h-64 w-full rounded-2xl" />
+                <Skeleton className="h-64 w-full rounded-2xl" />
+                <Skeleton className="h-64 w-full rounded-2xl" />
             </div>
         </div>
     );
@@ -211,7 +215,7 @@ export default function FamilyPage() {
 
             {/* ── Family Member Cards ─────────────────────────────────────── */}
             {members.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                     {members.map((member, index) => (
                         <FamilyMemberCard
                             key={member.user_id}

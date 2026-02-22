@@ -73,16 +73,26 @@ function MetricCard({ icon: Icon, label, value, unit, colorClass, isEmpty }) {
     );
 }
 
-function DashboardSkeleton() {
+function DashboardSkeleton({ userName }) {
     return (
-        <div className="space-y-4">
+        <div className="space-y-5">
+            {/* ── Header ──────────────────────────────────────────── */}
             <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                    <Skeleton className="h-7 w-44" />
-                    <Skeleton className="h-4 w-32" />
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">
+                        Hola, {userName ?? 'usuario'}
+                    </h1>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                        Cargando mediciones...
+                    </p>
                 </div>
-                <Skeleton className="h-10 w-24 rounded-xl" />
+                <Button asChild size="sm" className="gap-1.5 rounded-xl">
+                    <Link to="/nueva-medicion">
+                        <Plus className="h-4 w-4" /> Nuevo
+                    </Link>
+                </Button>
             </div>
+
             <Skeleton className="h-64 w-full rounded-2xl" />
             <Skeleton className="h-56 w-full rounded-2xl" />
         </div>
@@ -124,7 +134,7 @@ export default function DashboardPage() {
         return muscleChartData[muscleChartData.length - 1].value - muscleChartData[0].value;
     }, [muscleChartData]);
 
-    if (isLoading) return <DashboardSkeleton />;
+    if (isLoading) return <DashboardSkeleton userName={profile?.full_name} />;
 
     return (
         <div className="space-y-5">
