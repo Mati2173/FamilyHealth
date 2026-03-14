@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/AuthContext';
-import { useMeasurements, useWeightChartData, useMetricChartData } from '@/hooks/useMeasurements';
+import { useMeasurements, useMetricChartData } from '@/hooks/useMeasurements';
 import { cn } from '@/lib/utils';
 
 function MetricTooltip({ active, payload, label, unit = 'kg', isPercentage = false, color = 'hsl(var(--primary))' }) {
@@ -104,14 +104,14 @@ export default function DashboardPage() {
 
     const { measurements, latestMeasurement, isLoading, error, totalCount } = useMeasurements({ targetUserId: user?.id, limit: 20 });
 
-    const weightChartData = useWeightChartData(measurements, 20);
+    const weightChartData = useMetricChartData(measurements, 'weight_kg', 20);
     const bodyFatChartData = useMetricChartData(measurements, 'body_fat_pct', 20);
     const muscleChartData = useMetricChartData(measurements, 'muscle_mass_pct', 20);
 
     const { yMin, yMax } = useMemo(() => {
         if (!weightChartData.length) return { yMin: 50, yMax: 100 };
 
-        const weights = weightChartData.map((d) => d.weight);
+        const weights = weightChartData.map((d) => d.value);
         const min = Math.min(...weights);
         const max = Math.max(...weights);
         const pad = Math.max((max - min) * 0.2, 2);
@@ -121,7 +121,7 @@ export default function DashboardPage() {
 
     const weightDelta = useMemo(() => {
         if (weightChartData.length < 2) return null;
-        return weightChartData[weightChartData.length - 1].weight - weightChartData[0].weight;
+        return weightChartData[weightChartData.length - 1].value - weightChartData[0].value;
     }, [weightChartData]);
 
     const bodyFatDelta = useMemo(() => {
@@ -226,7 +226,7 @@ export default function DashboardPage() {
                                         {latestMeasurement && (
                                             <ReferenceLine y={latestMeasurement.weight_kg} stroke="hsl(var(--primary))" strokeDasharray="4 3" strokeOpacity={0.35} />
                                         )}
-                                        <Line type="monotone" dataKey="weight" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 2, stroke: 'hsl(var(--background))' }} />
+                                        <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 2, stroke: 'hsl(var(--background))' }} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </CardContent>

@@ -156,17 +156,3 @@ export function useMetricChartData(measurements, metricField = 'weight_kg', maxD
             count: values.length,
         }));
 }
-
-/**
- * Transform weight measurements into chart-formatted data
- * Limits to a specified number of recent days and averages multiple entries per day
- */
-export function useWeightChartData(measurements, maxDays = 30) {
-    const chartData = useMetricChartData(measurements, 'weight_kg', maxDays);
-    
-    // Transform the generic data to use 'weight' key instead of 'value' for backwards compatibility
-    return chartData.map(item => ({
-        ...item,
-        weight: item.value
-    }));
-}
