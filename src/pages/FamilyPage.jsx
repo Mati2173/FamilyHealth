@@ -119,6 +119,14 @@ function FamilyMemberCard({ member, isCurrentUser, className }) {
                         />
                     </div>
                 )}
+
+                {member.notes && (
+                    <div className="pt-2 border-t">
+                        <p className="text-sm text-muted-foreground italic">
+                            "{member.notes}"
+                        </p>
+                    </div>
+                )}
             </CardContent>
         </Card>
     );
